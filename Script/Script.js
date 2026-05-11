@@ -234,24 +234,6 @@ const urlTestBaseOption = {
   hidden: true,
 };
 
-// 定义创建地区策略组的函数
-function createRegionGroup(name, icon, proxies) {
-  const autoTestName = `${name}-自动选择`;
-  return [
-    {
-      ...urlTestBaseOption,
-      name: autoTestName,
-      proxies,
-    },
-    {
-      ...selectBaseOption,
-      name,
-      icon,
-      proxies: [autoTestName, ...proxies],
-    },
-  ];
-}
-
 // 定义分流策略组配置
 const serviceConfigs = [
   {
@@ -335,6 +317,24 @@ const serviceConfigs = [
     rules: ['RULE-SET,adblockmihomolite,广告拦截'],
   },
 ];
+
+// 定义创建地区策略组的函数
+function createRegionGroup(name, icon, proxies) {
+  const autoTestName = `${name}-自动选择`;
+  return [
+    {
+      ...urlTestBaseOption,
+      name: autoTestName,
+      proxies,
+    },
+    {
+      ...selectBaseOption,
+      name,
+      icon,
+      proxies: [autoTestName, ...proxies],
+    },
+  ];
+}
 
 // --- 主入口 ---
 

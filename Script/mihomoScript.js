@@ -269,24 +269,6 @@ const urlTestBaseOption = {
   hidden: true,
 };
 
-// 定义创建地区策略组的函数
-function createRegionGroup(name, icon, proxies) {
-  const autoTestName = `${name}-自动选择`;
-  return [
-    {
-      ...urlTestBaseOption,
-      name: autoTestName,
-      proxies,
-    },
-    {
-      ...selectBaseOption,
-      name,
-      icon,
-      proxies: [autoTestName, ...proxies],
-    },
-  ];
-}
-
 // 定义分流策略组配置
 const serviceConfigs = [
   {
@@ -605,6 +587,24 @@ const serviceConfigs = [
   },
 ];
 
+// 定义创建地区策略组的函数
+function createRegionGroup(name, icon, proxies) {
+  const autoTestName = `${name}-自动选择`;
+  return [
+    {
+      ...urlTestBaseOption,
+      name: autoTestName,
+      proxies,
+    },
+    {
+      ...selectBaseOption,
+      name,
+      icon,
+      proxies: [autoTestName, ...proxies],
+    },
+  ];
+}
+
 // --- 主入口 ---
 
 function main(config) {
@@ -763,14 +763,6 @@ function main(config) {
     ...generatedRegionGroups,
   ];
   config['rule-providers'] = finalRuleProviders;
-  config['rules'] = [
-    ...finalRules,
-
-    // 兜底规则
-    'RULE-SET,gfw,默认代理',
-    'RULE-SET,cn_ip,直连',
-    'MATCH,默认代理',
-  ];
 
   config['allow-lan'] = true;
   config['ipv6'] = true;
@@ -861,6 +853,15 @@ function main(config) {
     'auto-detect-interface': true,
     'dns-hijack': ['udp://any:53', 'tcp://any:53'],
   };
+
+  config['rules'] = [
+    ...finalRules,
+
+    // 兜底规则
+    'RULE-SET,gfw,默认代理',
+    'RULE-SET,cn_ip,直连',
+    'MATCH,默认代理',
+  ];
 
   return config;
 }
