@@ -199,12 +199,6 @@ const baseRuleProviders = {
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs',
     path: './ruleset/gfw.mrs',
   },
-  geolocation_cn: {
-    ...ruleProviderCommonDomain,
-    ...ruleProviderFormatMrs,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-cn.mrs',
-    path: './ruleset/geolocation-cn.mrs',
-  },
   cn_additional: {
     ...ruleProviderCommonDomain,
     ...ruleProviderFormatMrs,
@@ -234,18 +228,6 @@ const baseRuleProviders = {
     ...ruleProviderFormatMrs,
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple@cn.mrs',
     path: './ruleset/apple@cn.mrs',
-  },
-  connectivity_check: {
-    ...ruleProviderCommonDomain,
-    ...ruleProviderFormatMrs,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/connectivity-check.mrs',
-    path: './ruleset/connectivity-check.mrs',
-  },
-  category_ntp: {
-    ...ruleProviderCommonDomain,
-    ...ruleProviderFormatMrs,
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ntp.mrs',
-    path: './ruleset/category-ntp.mrs',
   },
 };
 
@@ -810,24 +792,15 @@ function main(config) {
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/16',
     'fake-ip-range-v6': 'fc00::/18',
-    'fake-ip-filter': [
-      'rule-set:private',
-      'rule-set:category_ntp',
-      'rule-set:fakeip_filter',
-      'rule-set:connectivity_check',
-      'rule-set:geolocation_cn',
-    ],
+    'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
     'proxy-server-nameserver': [...chinaDNS],
     'default-nameserver': ['223.5.5.5', '119.29.29.29'],
     nameserver: [...foreignDNS],
     'nameserver-policy': {
       '*': 'system',
-      '+.arpa': 'system',
-      'rule-set:private': 'system',
       'rule-set:cn': [...chinaDNS],
     },
-    'direct-nameserver': [...chinaDNS],
-    'direct-nameserver-follow-policy': true,
+    'direct-nameserver': ['system'],
   };
 
   config['hosts'] = {

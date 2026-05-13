@@ -214,24 +214,15 @@ function main(config) {
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/16',
     'fake-ip-range-v6': 'fc00::/18',
-    'fake-ip-filter': [
-      'rule-set:private',
-      'rule-set:category_ntp',
-      'rule-set:fakeip_filter',
-      'rule-set:connectivity_check',
-      'rule-set:geolocation_cn',
-    ],
+    'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
     'proxy-server-nameserver': [...chinaDNS],
     'default-nameserver': ['223.5.5.5', '119.29.29.29'],
     nameserver: [...foreignDNS],
     'nameserver-policy': {
       '*': 'system',
-      '+.arpa': 'system',
-      'rule-set:private': 'system',
       'rule-set:cn': [...chinaDNS],
     },
-    'direct-nameserver': [...chinaDNS],
-    'direct-nameserver-follow-policy': true,
+    'direct-nameserver': ['system'],
   };
 
   config['hosts'] = {

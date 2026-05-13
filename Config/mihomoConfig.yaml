@@ -78,10 +78,7 @@ dns:
   fake-ip-range-v6: 'fc00::/18'
   fake-ip-filter:
     - 'rule-set:private'
-    - 'rule-set:category_ntp'
     - 'rule-set:fakeip_filter'
-    - 'rule-set:connectivity_check'
-    - 'rule-set:geolocation_cn'
   proxy-server-nameserver: *chinaDNS
   default-nameserver:
     - '223.5.5.5'
@@ -89,11 +86,8 @@ dns:
   nameserver: *foreignDNS
   nameserver-policy:
     '*': 'system'
-    '+.arpa': 'system'
-    'rule-set:private': 'system'
     'rule-set:cn': *chinaDNS
-  direct-nameserver: *chinaDNS
-  direct-nameserver-follow-policy: true
+  direct-nameserver: [system]
 
 hosts:
   'dns.alidns.com': ['223.5.5.5', '223.6.6.6']
@@ -248,11 +242,6 @@ rule-providers:
     format: mrs
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gfw.mrs'
     path: './ruleset/gfw.mrs'
-  geolocation_cn:
-    <<: *rp_domain
-    format: mrs
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-cn.mrs'
-    path: './ruleset/geolocation-cn.mrs'
   cn_additional:
     <<: *rp_domain
     format: mrs
@@ -323,16 +312,6 @@ rule-providers:
     format: mrs
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple@cn.mrs'
     path: './ruleset/apple@cn.mrs'
-  connectivity_check:
-    <<: *rp_domain
-    format: mrs
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/connectivity-check.mrs'
-    path: './ruleset/connectivity-check.mrs'
-  category_ntp:
-    <<: *rp_domain
-    format: mrs
-    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ntp.mrs'
-    path: './ruleset/category-ntp.mrs'
   instagram:
     <<: *rp_domain
     format: mrs
