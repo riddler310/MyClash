@@ -49,9 +49,11 @@ https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/mihomo
 
 ## 内置策略组
 
-> - _若不需要某个策略组，可在脚本中将对应开关设为 `false`_
+> - _若不需要某个分流策略组，可在脚本中将对应开关设为 `false`_
 
 - `默认代理`
+- `自动选择`
+- `负载均衡`
 - `AI`
 - `YouTube`
 - `FCM`
