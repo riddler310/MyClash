@@ -1,5 +1,13 @@
 // ------- AIsouler自用脚本 -------
 
+/**
+ * mihomo配置覆写脚本（精简版）
+ * 作者：AIsouler
+ * 原仓库：https://github.com/AIsouler/MyClash
+ * 脚本链接：https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script.js
+ * 友情推荐，非常好用、省电且内存占用低的代理软件：https://github.com/appshubcc/Bettbox
+ */
+
 // --- 静态配置区域 ---
 
 // 预定义 rules
@@ -11,6 +19,7 @@ const rules = [
   // 国内直连
   'RULE-SET,games_cn,直连',
   'RULE-SET,epicgames,直连',
+  'RULE-SET,apple_cn,直连',
   'DOMAIN,fsend.cn,直连',
 
   // 进程规则
@@ -118,6 +127,13 @@ const baseRuleProviders = {
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-games@cn.mrs',
     path: './ruleset/category-games@cn.mrs',
     'path-in-bundle': 'geo/geosite/category-games@cn.mrs',
+  },
+  apple_cn: {
+    ...ruleProviderCommonDomain,
+    ...ruleProviderFormatMrs,
+    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple@cn.mrs',
+    path: './ruleset/apple@cn.mrs',
+    'path-in-bundle': 'geo/geosite/apple@cn.mrs',
   },
   github: {
     ...ruleProviderCommonDomain,
