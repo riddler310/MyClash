@@ -794,6 +794,63 @@ function main(config) {
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png',
   };
 
+  // --- DNS配置 ---
+
+  // 国内外 DNS 定义
+  const chinaDNS = [
+    'https://dns.alidns.com/dns-query#DIRECT',
+    'https://doh.pub/dns-query#DIRECT',
+  ];
+  const foreignDNS = [
+    'https://dns.cloudflare.com/dns-query#默认代理',
+    'https://dns.google/dns-query#默认代理',
+  ];
+
+  // 读取订阅中的 DNS 配置
+  const originalDns = config.dns || {};
+
+  // 过滤 proxy-server-nameserver 中常见的公共 DNS
+  const commonDnsRegex =
+    /(223\.5\.5\.5|223\.6\.6\.6|119\.29\.29\.29|114\.114\.114\.114|180\.76\.76\.76|1\.1\.1\.1|1\.0\.0\.1|8\.8\.8\.8|8\.8\.4\.4|alidns|doh\.pub|dot\.pub|dns\.baidu|dns\.google|cloudflare)/i;
+
+  const subscriptionProxyServerNameserver = (
+    originalDns['proxy-server-nameserver'] || []
+  ).filter((dns) => !commonDnsRegex.test(String(dns)));
+
+  const subscriptionProxyServerNameserverPolicy =
+    originalDns['proxy-server-nameserver-policy'] || {};
+
+  config['dns'] = {
+    enable: true,
+    ipv6: true,
+    listen: ':1053',
+    'cache-algorithm': 'arc',
+    'use-hosts': true,
+    'use-system-hosts': true,
+    'enhanced-mode': 'fake-ip',
+    'fake-ip-range': '198.18.0.1/16',
+    'fake-ip-range-v6': 'fc00::/18',
+    'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
+
+    // 合并订阅中的 proxy-server-nameserver
+    'proxy-server-nameserver': [
+      ...chinaDNS,
+      ...subscriptionProxyServerNameserver,
+    ],
+
+    // 合并订阅中的 proxy-server-nameserver-policy
+    'proxy-server-nameserver-policy': {
+      ...subscriptionProxyServerNameserverPolicy,
+    },
+
+    'default-nameserver': ['223.5.5.5', '119.29.29.29'],
+    nameserver: [...foreignDNS],
+    'nameserver-policy': {
+      'rule-set:cn': [...chinaDNS],
+    },
+    'direct-nameserver': ['system', '223.5.5.5', '119.29.29.29'],
+  };
+
   // --- 覆盖基础配置 ---
 
   config.proxies.push(
@@ -837,36 +894,6 @@ function main(config) {
   config['profile'] = {
     'store-selected': true,
     'store-fake-ip': true,
-  };
-
-  // 国内外 DNS 定义
-  const chinaDNS = [
-    'https://dns.alidns.com/dns-query#DIRECT',
-    'https://doh.pub/dns-query#DIRECT',
-  ];
-  const foreignDNS = [
-    'https://dns.cloudflare.com/dns-query#默认代理',
-    'https://dns.google/dns-query#默认代理',
-  ];
-
-  config['dns'] = {
-    enable: true,
-    ipv6: true,
-    listen: ':1053',
-    'cache-algorithm': 'arc',
-    'use-hosts': true,
-    'use-system-hosts': true,
-    'enhanced-mode': 'fake-ip',
-    'fake-ip-range': '198.18.0.1/16',
-    'fake-ip-range-v6': 'fc00::/18',
-    'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
-    'proxy-server-nameserver': [...chinaDNS],
-    'default-nameserver': ['223.5.5.5', '119.29.29.29'],
-    nameserver: [...foreignDNS],
-    'nameserver-policy': {
-      'rule-set:cn': [...chinaDNS],
-    },
-    'direct-nameserver': ['system', '223.5.5.5', '119.29.29.29'],
   };
 
   config['hosts'] = {

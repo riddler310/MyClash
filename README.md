@@ -2,6 +2,8 @@
 
 Mihomo（Clash Meta）配置文件和覆写脚本，分别提供全量版和精简版，无DNS泄露（图一乐），内置多项分流策略、地区策略，实现全局排除节点、自动识别节点倍率等功能
 
+友情推荐，非常好用、省电且内存占用低的代理软件：[Bettbox](https://github.com/appshubcc/Bettbox)
+
 ## 配置文件
 
 > - _配置文件实现的效果和脚本基本一致_
@@ -51,11 +53,11 @@ https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script
 
 ## 配置和脚本说明
 
-- 脚本仅适用于使用 [mihomo 内核](https://github.com/MetaCubeX/mihomo/tree/Alpha) 的代理客户端
+- 仅适用于使用 [mihomo 内核](https://github.com/MetaCubeX/mihomo/tree/Alpha) 的代理客户端
 
 - 脚本仅适用于覆写机场提供的配置文件，请勿用于覆写自己编写的配置文件
 
-- 脚本内策略组、节点组均支持自定义是否启用（默认启用）
+- 全量版脚本内策略组、节点组均支持自定义是否启用（默认启用）
 
 - 内置的DNS配置已解决DNS泄露问题（图一乐），建议不要开启代理软件的DNS覆写
 
@@ -71,7 +73,7 @@ https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script
 
 ## 内置策略组
 
-> - _若不需要某个分流策略组，可在脚本中将对应开关设为 `false`_
+> - _若不需要某个分流策略组，可在脚本中将 `ruleOptionsEnable` 对应值设为 `false`_
 
 - `默认代理`
 - `自动选择`
@@ -99,7 +101,7 @@ https://raw.githubusercontent.com/AIsouler/MyClash/refs/heads/main/Script/Script
 ## 内置节点组
 
 > - _所有组均为手动选择（select），内部包含对应的自动选择策略组和负载均衡策略组_
-> - _若不需要某个节点组，可在脚本中将对应开关设为 `false`_
+> - _若不需要某个节点组，可在脚本中将 `regionDefinitionsEnable` 对应值设为 `false`_
 > - _若机场订阅中不存在对应节点组的节点，则该节点组不会显示_
 > - _未匹配节点组或未启用节点组的节点，将统一归类至 「其他节点」_
 
