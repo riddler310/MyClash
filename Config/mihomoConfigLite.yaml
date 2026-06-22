@@ -206,6 +206,12 @@ rule-providers:
     url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/telegram.mrs'
     path: './ruleset/telegram_ip.mrs'
     path-in-bundle: 'geo/geoip/telegram.mrs'
+  google:
+    <<: *rule_providers_domain
+    format: mrs
+    url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs'
+    path: './ruleset/google.mrs'
+    path-in-bundle: 'geo/geosite/google.mrs'
   gfw:
     <<: *rule_providers_domain
     format: mrs
@@ -440,6 +446,7 @@ rules:
   - RULE-SET,telegram_ip,Telegram,no-resolve
 
   # 兜底规则
+  - RULE-SET,google,默认代理
   - RULE-SET,gfw,默认代理
   - RULE-SET,cn_additional,直连
   - RULE-SET,cn_ip,直连
