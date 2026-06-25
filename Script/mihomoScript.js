@@ -35,20 +35,12 @@ const ruleOptionsEnable = {
 };
 
 /**
- * 节点组配置，用于分类地区节点和倍率节点
- * 未启用的节点组将不会被生成，且该节点组的节点会被分类到其他节点组中
+ * 全局排除高倍率节点配置
+ * 该配置用于启用全局排除高倍率节点功能
  * true = 启用
  * false = 禁用
  */
-const regionDefinitionsEnable = {
-  香港: true,
-  日本: true,
-  美国: true,
-  新加坡: true,
-  台湾省: true,
-  低倍率节点: true,
-  高倍率节点: true,
-};
+const excludeHighRateProxiesEnable = false;
 
 /**
  * 全局排除节点过滤配置
@@ -582,8 +574,14 @@ function main(config) {
   const newConfig = {};
 
   // 排除匹配到的节点
-  if (excludeFilterEnable && Array.isArray(config.proxies)) {
-    config.proxies = config.proxies.filter((proxy) => !excludeFilter.test(proxy.name));
+  if (Array.isArray(config.proxies)) {
+    const highRateRegex = excludeHighRateProxiesEnable
+      ? regionDefinitions.find((r) => r.name === '高倍率节点')?.regex
+      : null;
+
+    config.proxies = config.proxies.filter(
+      (proxy) => !(excludeFilterEnable && excludeFilter.test(proxy.name)) && !highRateRegex?.test(proxy.name),
+    );
   }
 
   // 获取节点列表
@@ -602,14 +600,13 @@ function main(config) {
   // --- 构建地区组和倍率组 ---
 
   // 节点分类
-  const enabledDefinitions = regionDefinitions.filter((r) => regionDefinitionsEnable[r.name] === true);
-  const regionGroups = Object.fromEntries(enabledDefinitions.map((r) => [r.name, { ...r, proxies: [] }]));
+  const regionGroups = Object.fromEntries(regionDefinitions.map((r) => [r.name, { ...r, proxies: [] }]));
   const otherProxies = [];
 
   for (const proxy of proxies) {
     let matched = false;
 
-    for (const region of enabledDefinitions) {
+    for (const region of regionDefinitions) {
       if (region.regex.test(proxy.name)) {
         regionGroups[region.name].proxies.push(proxy.name);
 
@@ -627,7 +624,7 @@ function main(config) {
   }
 
   // 构建地区策略组
-  const generatedRegionGroups = enabledDefinitions
+  const generatedRegionGroups = regionDefinitions
     .filter((r) => regionGroups[r.name].proxies.length > 0)
     .flatMap((r) => createRegionGroup(r.name, r.icon, regionGroups[r.name].proxies));
 
