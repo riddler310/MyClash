@@ -714,19 +714,37 @@ function main(config) {
   // --- 添加基础配置 ---
 
   // DNS配置
-  // 读取订阅中的 DNS 配置，保留订阅中的 proxy-server-nameserver 和 proxy-server-nameserver-policy
+  // 读取订阅中的 DNS 配置，保留订阅中的私有 DNS
   // 用以解决部分机场使用私有 DNS 导致无法解析节点的问题
-  const originalDns = config.dns || {};
+  const originalDnsConfig = config.dns || {};
 
-  // 过滤 proxy-server-nameserver 中常见的公共 DNS
+  // 过滤常见的公共 DNS
   const commonDnsRegex =
-    /(223\.5\.5\.5|223\.6\.6\.6|119\.29\.29\.29|114\.114\.114\.114|180\.76\.76\.76|1\.1\.1\.1|1\.0\.0\.1|8\.8\.8\.8|8\.8\.4\.4|alidns|doh\.pub|dot\.pub|dns\.baidu|dns\.google|cloudflare)/i;
+    /(223\.5\.5\.5|223\.6\.6\.6|119\.29\.29\.29|1\.12\.12\.12|120\.53\.53\.53|114\.114\.114\.114|180\.76\.76\.76|1\.1\.1\.1|1\.0\.0\.1|8\.8\.8\.8|8\.8\.4\.4|alidns|doh\.pub|dot\.pub|dns\.baidu|dns\.google|cloudflare|system)/i;
 
-  const originalProxyServerNameserver = (originalDns['proxy-server-nameserver'] || []).filter(
+  const originalProxyServerNameserver = (originalDnsConfig['proxy-server-nameserver'] || []).filter(
     (dns) => !commonDnsRegex.test(String(dns)),
   );
 
-  const originalProxyServerNameserverPolicy = originalDns['proxy-server-nameserver-policy'] || {};
+  // 合并 nameserver-policy 和 proxy-server-nameserver-policy
+  // 部分机场会把节点域名解析器写到 nameserver-policy 中
+  const originalPolicyNameserver = {};
+
+  for (const policy of [
+    originalDnsConfig['nameserver-policy'] || {},
+    originalDnsConfig['proxy-server-nameserver-policy'] || {},
+  ]) {
+    for (const [rule, dns] of Object.entries(policy)) {
+      const dnsList = Array.isArray(dns) ? dns : [dns];
+
+      // 去重并过滤常见公共 DNS
+      const filteredDns = [...new Set(dnsList)].filter((item) => !commonDnsRegex.test(String(item)));
+
+      if (filteredDns.length > 0) {
+        originalPolicyNameserver[rule] = filteredDns;
+      }
+    }
+  }
 
   // 国内外 DNS 定义
   const chinaDNS = ['https://dns.alidns.com/dns-query#DIRECT', 'https://doh.pub/dns-query#DIRECT'];
@@ -735,17 +753,19 @@ function main(config) {
   newConfig['dns'] = {
     enable: true,
     ipv6: true,
-    'cache-algorithm': 'arc',
     'use-hosts': true,
+    'cache-algorithm': 'arc',
     'use-system-hosts': true,
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/16',
     'fake-ip-range-v6': 'fc00::/18',
     'fake-ip-filter': ['rule-set:private', 'rule-set:fakeip_filter'],
-    'proxy-server-nameserver': [...chinaDNS, ...originalProxyServerNameserver],
-    'proxy-server-nameserver-policy': {
-      ...originalProxyServerNameserverPolicy,
-    },
+    'proxy-server-nameserver': [
+      ...(originalProxyServerNameserver.length > 0 ? originalProxyServerNameserver : chinaDNS),
+    ],
+    ...(Object.keys(originalPolicyNameserver).length > 0 && {
+      'proxy-server-nameserver-policy': originalPolicyNameserver,
+    }),
     'default-nameserver': ['223.5.5.5', '119.29.29.29'],
     nameserver: [...foreignDNS],
     'nameserver-policy': {
