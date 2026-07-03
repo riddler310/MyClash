@@ -88,7 +88,6 @@ https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfigLite.
 - `Media` （YouTube+Instagram+Netflix+HBO+Twitch+Disney+NicoNico+BBC+Pornhub）
 - `FCM`
 - `Google`
-- `GitHub`
 - `Microsoft`
 - `Apple`
 - `Telegram`
