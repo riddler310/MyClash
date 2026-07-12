@@ -545,27 +545,21 @@ function createRegionGroup(name, icon, proxies) {
 function main(config) {
   const newConfig = {};
 
-  // 排除匹配到的节点
-  if (Array.isArray(config.proxies)) {
-    const highRateRegex = excludeHighRateProxiesEnable
-      ? regionDefinitions.find((r) => r.name === '高倍率节点')?.regex
-      : null;
+  const highRateRegex = excludeHighRateProxiesEnable
+    ? regionDefinitions.find((r) => r.name === '高倍率节点')?.regex
+    : null;
 
-    config.proxies = config.proxies.filter(
-      (proxy) => !excludeFilter.test(proxy.name) && !highRateRegex?.test(proxy.name),
-    );
-  }
-
-  // 获取节点列表
-  const proxies = config.proxies || [];
+  // 过滤节点列表
+  const filteredProxies = (config.proxies || []).filter(
+    (proxy) => !excludeFilter.test(proxy.name) && !highRateRegex?.test(proxy.name),
+  );
 
   // 验证节点列表是否存在代理节点
-  const isAllDirectOrReject = proxies.every((p) => {
+  const isAllDirectOrReject = filteredProxies.every((p) => {
     const type = p.type?.toLowerCase();
     return type === 'direct' || type === 'reject';
   });
-
-  if (!proxies.length || isAllDirectOrReject) {
+  if (!filteredProxies.length || isAllDirectOrReject) {
     throw new Error('配置文件中未找到任何代理节点，请使用机场提供的配置文件进行覆写');
   }
 
@@ -575,7 +569,7 @@ function main(config) {
   const regionGroups = Object.fromEntries(regionDefinitions.map((r) => [r.name, { ...r, proxies: [] }]));
   const otherProxies = [];
 
-  for (const proxy of proxies) {
+  for (const proxy of filteredProxies) {
     let matched = false;
 
     for (const region of regionDefinitions) {
@@ -650,18 +644,14 @@ function main(config) {
   for (const svc of serviceConfigs) {
     if (!ruleOptionsEnable[svc.name]) continue;
 
+    // 添加分流策略组对应的 Rule 和 Rule Providers
     finalRules.push(...svc.rules);
-
-    // 添加分流策略组对应的 Rule Providers
-    const providers = svc.providers || {};
-    for (const [providerName, providerConfig] of Object.entries(providers)) {
-      finalRuleProviders[providerName] = providerConfig;
-    }
+    Object.assign(finalRuleProviders, svc.providers || {});
 
     // 添加分流策略组对应的节点列表
     const groupProxies = svc.reject
       ? ['REJECT', 'REJECT-DROP', 'PASS']
-      : ['默认代理', '自动选择', '负载均衡', '手动选择', ...groupNamesOfSelect, ...(svc.direct ? ['直连'] : [])];
+      : ['默认代理', '手动选择', '自动选择', '负载均衡', ...groupNamesOfSelect, ...(svc.direct ? ['直连'] : [])];
 
     functionalGroups.push({
       ...selectBaseOption,
@@ -763,7 +753,7 @@ function main(config) {
   // ---hosts 配置---
 
   // 收集所有节点域名
-  const proxyDomains = new Set(proxies.map((proxy) => proxy.server.toLowerCase()));
+  const proxyDomains = new Set(filteredProxies.map((proxy) => proxy.server.toLowerCase()));
 
   // 提取订阅 hosts 中与节点域名对应的记录
   const originalHosts = config.hosts || {};
@@ -833,7 +823,7 @@ function main(config) {
 
   // 添加节点
   newConfig['proxies'] = [
-    ...config.proxies,
+    ...filteredProxies,
     {
       name: '🇨🇳 直连 | IPv4优先',
       type: 'direct',
