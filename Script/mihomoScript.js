@@ -760,7 +760,7 @@ function main(config) {
 
   newConfig['dns'] = {
     enable: true,
-    ipv6: true,
+    ipv6: false,
     'use-hosts': true,
     'cache-algorithm': 'arc',
     'use-system-hosts': true,
@@ -809,7 +809,7 @@ function main(config) {
   };
 
   newConfig['allow-lan'] = true;
-  newConfig['ipv6'] = true;
+  newConfig['ipv6'] = false;
   newConfig['mode'] = 'rule';
   newConfig['log-level'] = 'info';
   newConfig['bind-address'] = '*';
