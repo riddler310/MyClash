@@ -68,7 +68,7 @@ const regionDefinitions = [
   },
   {
     name: '美国',
-    regex: /🇺🇸|美|US|[Aa]merica|[Uu]nited\s*[Ss]tates/,
+    regex: /🇺🇸|美|夏威夷|ATT|MEGA|US|[Aa]merica|[Uu]nited\s*[Ss]tates/,
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png',
   },
   {
