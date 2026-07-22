@@ -409,7 +409,7 @@ const serviceConfigs = [
   {
     name: 'NS',
     allNodes: true,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Forum.png',
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png'
     rules: ['DOMAIN-SUFFIX,nodeseek.com,NS'],
   },
   {
