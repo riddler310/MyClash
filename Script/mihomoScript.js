@@ -16,31 +16,24 @@
 const ruleOptionsEnable = {
   AI: true, // 国外AI服务
   Media: true, // 国外视频平台
+  Instagram: true, // Instagram社交平台
   FCM: true, // GoogleFCM服务
   Google: true, // Google服务
   Microsoft: true, // Microsoft服务
   Apple: true, // Apple服务
   Telegram: true, // Telegram通讯软件
+  NS: true, // NodeSeek论坛
   Steam: true, // Steam游戏平台
   TikTok: true, // TikTok视频平台
   Twitter: true, // Twitter社交平台
   Emby: true, // Emby媒体服务
-  PikPak: true, // PikPak网盘服务
   Spotify: true, // Spotify音乐服务
   AdBlock: true, // 广告拦截
 };
 
-/**
- * 全局排除高倍率节点配置
- * 该配置用于启用全局排除高倍率节点功能
- * true = 启用
- * false = 禁用
- */
-const excludeHighRateProxiesEnable = false;
-
 // 定义全局排除节点的正则表达式，用于排除非地区的信息节点
 const excludeFilter =
-  /群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|expire|http|com|traffic/iu;
+  /群|❌|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|expire|http|com|traffic/iu;
 
 // 预定义 rules
 const rules = [
@@ -87,17 +80,6 @@ const regionDefinitions = [
     name: '台湾省',
     regex: /🇹🇼|台湾|TW|[Tt]aiwan/,
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png',
-  },
-  {
-    name: '低倍率节点',
-    regex: /^(?!.*(?:剩|期|客户端|软件)).*(?:(?<!\d)0\.[0-5]|下载|低倍)/,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available_1.png',
-  },
-  {
-    name: '高倍率节点',
-    regex:
-      /(?:[*×xX✕✖⨉]\s*(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?)|(?:(?<![\d.])(?:[2-9]\d*|[1-9]\d+)(?:\.\d+)?\s*(?:倍|[*×xX✕✖⨉]))/u,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Airport.png',
   },
 ];
 
@@ -268,12 +250,6 @@ const serviceConfigs = [
         path: './ruleset/youtube.mrs',
         'path-in-bundle': 'geo/geosite/youtube.mrs',
       },
-      instagram: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs',
-        path: './ruleset/instagram.mrs',
-        'path-in-bundle': 'geo/geosite/instagram.mrs',
-      },
       netflix: {
         ...ruleProviderCommonDomain,
         url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs',
@@ -326,7 +302,6 @@ const serviceConfigs = [
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png',
     rules: [
       'RULE-SET,youtube,Media',
-      'RULE-SET,instagram,Media',
       'RULE-SET,netflix,Media',
       'RULE-SET,netflix_ip,Media,no-resolve',
       'RULE-SET,hbo,Media',
@@ -336,6 +311,19 @@ const serviceConfigs = [
       'RULE-SET,bbc,Media',
       'RULE-SET,pornhub,Media',
     ],
+  },
+  {
+    name: 'Instagram',
+    providers: {
+      instagram: {
+        ...ruleProviderCommonDomain,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs',
+        path: './ruleset/instagram.mrs',
+        'path-in-bundle': 'geo/geosite/instagram.mrs',
+      },
+    },
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Instagram.png',
+    rules: ['RULE-SET,instagram,Instagram'],
   },
   {
     name: 'FCM',
@@ -419,6 +407,12 @@ const serviceConfigs = [
     rules: ['RULE-SET,telegram,Telegram', 'RULE-SET,telegram_ip,Telegram,no-resolve'],
   },
   {
+    name: 'NS',
+    allNodes: true,
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Forum.png',
+    rules: ['DOMAIN-SUFFIX,nodeseek.com,NS'],
+  },
+  {
     name: 'Steam',
     direct: true,
     providers: {
@@ -478,20 +472,6 @@ const serviceConfigs = [
     },
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png',
     rules: ['RULE-SET,emby,Emby', 'DOMAIN-SUFFIX,mb3admin.com,Emby', 'DOMAIN-KEYWORD,emby,Emby'],
-  },
-  {
-    name: 'PikPak',
-    direct: true,
-    providers: {
-      pikpak: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/pikpak.mrs',
-        path: './ruleset/pikpak.mrs',
-        'path-in-bundle': 'geo/geosite/pikpak.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/lige47/QuanX-icon-rule@main/icon/03CNSoft/pikpak.png',
-    rules: ['RULE-SET,pikpak,PikPak'],
   },
   {
     name: 'Spotify',
@@ -602,16 +582,10 @@ function matchDomainPattern(pattern, domains) {
 function main(config) {
   const newConfig = {};
 
-  const highRateRegex = excludeHighRateProxiesEnable
-    ? regionDefinitions.find((r) => r.name === '高倍率节点')?.regex
-    : null;
-
   // 过滤节点列表
   const filteredProxies = (config.proxies || []).filter((proxy) => {
     const type = String(proxy.type ?? '').toLowerCase();
-    return (
-      type !== 'direct' && type !== 'reject' && !excludeFilter.test(proxy.name) && !highRateRegex?.test(proxy.name)
-    );
+    return type !== 'direct' && type !== 'reject' && !excludeFilter.test(proxy.name);
   });
 
   // 验证节点列表是否存在代理节点
@@ -630,15 +604,11 @@ function main(config) {
     for (const region of regionDefinitions) {
       if (region.regex.test(proxy.name)) {
         regionGroups[region.name].proxies.push(proxy.name);
-
-        // 如果匹配到的是地区组（非倍率组），则标记为已分类
-        if (region.name !== '低倍率节点' && region.name !== '高倍率节点') {
-          matched = true;
-        }
+        matched = true;
       }
     }
 
-    // 未匹配到地区组（不包含倍率组）的归为其他节点
+    // 未匹配到地区组的归为其他节点
     if (!matched) {
       otherProxies.push(proxy.name);
     }
@@ -706,13 +676,19 @@ function main(config) {
     // 添加分流策略组对应的节点列表
     const groupProxies = svc.reject
       ? ['REJECT', 'REJECT-DROP', 'PASS']
-      : ['默认代理', '手动选择', '自动选择', '负载均衡', ...groupNamesOfSelect, ...(svc.direct ? ['直连'] : [])];
+      : svc.allNodes
+        ? []
+        : ['默认代理', '手动选择', '自动选择', '负载均衡', ...groupNamesOfSelect, ...(svc.direct ? ['直连'] : [])];
 
     functionalGroups.push({
       ...selectBaseOption,
       name: svc.name,
       icon: svc.icon,
       proxies: groupProxies,
+      ...(svc.allNodes && {
+        'include-all': true,
+        'exclude-type': 'DIRECT',
+      }),
       ...(svc.defaultSelected !== undefined && {
         'default-selected': svc.defaultSelected,
       }),
