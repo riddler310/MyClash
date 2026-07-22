@@ -58,7 +58,7 @@ const rules = [
 const regionDefinitions = [
   {
     name: '香港',
-    regex: /🇭🇰|港|HK|[Hh]ong\s*[Kk]ong/,
+    regex: /🇭🇰|香港|HK|[Hh]ong\s*[Kk]ong/,
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png',
   },
   {
