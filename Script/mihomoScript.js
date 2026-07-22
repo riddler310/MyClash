@@ -191,7 +191,7 @@ const baseRuleProviders = {
 const groupBaseOption = {
   interval: 600,
   timeout: 3000,
-  url: 'https://g.cn/generate_204',
+  url: 'http://cp.cloudflare.com/generate_204',
   lazy: true,
   'max-failed-times': 3,
   'empty-fallback': 'REJECT',
@@ -409,7 +409,7 @@ const serviceConfigs = [
   {
     name: 'NS',
     allNodes: true,
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png'
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Forum.png',
     rules: ['DOMAIN-SUFFIX,nodeseek.com,NS'],
   },
   {
@@ -707,7 +707,7 @@ function main(config) {
       ...selectBaseOption,
       name: '直连',
       proxies: ['🇨🇳 直连 | IPv4优先', '🇨🇳 直连 | IPv6优先', '🇨🇳 直连 | 双栈'],
-      url: 'https://connectivitycheck.platform.hicloud.com/generate_204',
+      url: 'http://cp.cloudflare.com/generate_204',
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png',
     },
   );
