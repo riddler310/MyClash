@@ -29,22 +29,6 @@
 const enableIPv6 = false;
 
 /**
- * 是否启用域名嗅探（sniffer）
- * 作用：还原直连 IP / 绕过内核 DNS 的流量的域名，提高规则命中率
- * 默认关闭：Bybit 等交易所 App 会使用自选 IP 直连、非标准 TLS 等方式对抗封锁，
- * 嗅探（尤其是目标改写）可能破坏这类连接，表现为浏览器正常但 App 报网络错误
- */
-const enableSniffer = false;
-
-/**
- * 是否启用"禁国外 QUIC"规则
- * 设备内 TUN 下 REJECT 会让应用立刻回落 TCP；但在旁路由/路由器场景下，
- * UDP 的 REJECT 表现为静默丢包，QUIC 优先的 App 需要干等超时，可能直接报网络错误。
- * 若旁路由环境下出现"浏览器正常、App 报错"，可将其设为 false 测试
- */
-const enableQuicBlock = true;
-
-/**
  * 混合端口（HTTP + SOCKS5）。allow-lan 局域网共享必须有监听端口才生效；
  * 纯 TUN 场景可设为 0 关闭。Mihomo Party / Clash Verge 等 GUI 通常会覆盖端口设置
  */
@@ -63,7 +47,6 @@ const apiSecret = '';
  */
 const ruleOptionsEnable = {
   AI: true, // 国外AI服务
-  Crypto: true, // 加密货币交易所/钱包（Bybit、SafePal、币安等）
   Media: true, // 国外视频平台
   Instagram: true, // Instagram社交平台
   FCM: true, // GoogleFCM服务
@@ -97,10 +80,6 @@ const quicBlockRule =
 // 需要先于服务分流强制走代理的规则
 // 注意：github 必须排在 Microsoft 分流之前，因为 geosite:microsoft 规则集包含 GitHub 域名
 const forceProxyRules = ['RULE-SET,github,默认代理'];
-
-// 广告拦截白名单：写在这里的完整规则会排在广告拦截之前，用于救回被误杀的域名
-// 示例：'DOMAIN-SUFFIX,app-measurement.com,Google'（放行 Firebase 统计并按 Google 分流）
-const adblockAllowRules = [];
 
 // 国内直连
 const cnDirectRules = [
@@ -299,32 +278,6 @@ const serviceConfigs = [
     },
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png',
     rules: ['RULE-SET,ai,AI'],
-  },
-  {
-    // 交易所/钱包类金融应用对出口 IP 风控严格：Bybit 等封锁美国、新加坡、英国、
-    // 大陆等地区出口，SafePal Bank（Fiat24）等银行服务还会拦截数据中心 IP。
-    // 默认跟随"默认代理"（组内第一项）；本地网络可直连这些服务时再手动切"直连"。
-    // 走代理时优先选香港/日本等未被交易所封锁的出口，家宽/原生 IP 最稳。
-    name: 'Crypto',
-    direct: true,
-    providers: {
-      cryptocurrency: {
-        ...ruleProviderCommonDomain,
-        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-cryptocurrency.mrs',
-        path: './ruleset/cryptocurrency.mrs',
-        'path-in-bundle': 'geo/geosite/category-cryptocurrency.mrs',
-      },
-    },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bitcoin.png',
-    rules: [
-      // 显式域名兜底，避免规则集缺失或更新滞后导致 App 断网
-      'DOMAIN-SUFFIX,safepal.com,Crypto',
-      'DOMAIN-SUFFIX,safepal.io,Crypto',
-      'DOMAIN-SUFFIX,bybit.com,Crypto',
-      'DOMAIN-SUFFIX,bybitglobal.com,Crypto',
-      'DOMAIN-SUFFIX,bycsi.com,Crypto',
-      'RULE-SET,cryptocurrency,Crypto',
-    ],
   },
   {
     name: 'Media',
@@ -906,12 +859,11 @@ function main(config) {
   // ---域名嗅探---
 
   // 还原直连 IP / 未经过内核 DNS 的连接的域名，提高规则命中率
-  // 注意：交易所类 App 的自选 IP 直连/非标准 TLS 可能被嗅探破坏，默认由 enableSniffer 关闭
-  if (enableSniffer) newConfig['sniffer'] = {
+  newConfig['sniffer'] = {
     enable: true,
     'force-dns-mapping': true,
     'parse-pure-ip': true,
-    'override-destination': true,
+    'override-destination': false,
     sniff: {
       HTTP: { ports: [80, '8080-8880'] },
       TLS: { ports: [443, 8443] },
@@ -994,14 +946,11 @@ function main(config) {
     // 私有网络最先直连
     ...privateRules,
 
-    // 广告拦截白名单（救回误杀域名）
-    ...adblockAllowRules,
-
     // 广告拦截必须先于所有服务分流
     ...rejectServiceRules,
 
-    // 禁用国外 QUIC 流量（可由 enableQuicBlock 关闭，见静态配置区说明）
-    ...(enableQuicBlock ? [quicBlockRule] : []),
+    // 禁用国外 QUIC 流量
+    quicBlockRule,
 
     // 强制代理（github 需在 Microsoft 分流之前）
     ...forceProxyRules,
