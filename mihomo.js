@@ -37,6 +37,14 @@ const enableIPv6 = false;
 const enableSniffer = false;
 
 /**
+ * 是否启用"禁国外 QUIC"规则
+ * 设备内 TUN 下 REJECT 会让应用立刻回落 TCP；但在旁路由/路由器场景下，
+ * UDP 的 REJECT 表现为静默丢包，QUIC 优先的 App 需要干等超时，可能直接报网络错误。
+ * 若旁路由环境下出现"浏览器正常、App 报错"，可将其设为 false 测试
+ */
+const enableQuicBlock = false;
+
+/**
  * 混合端口（HTTP + SOCKS5）。allow-lan 局域网共享必须有监听端口才生效；
  * 纯 TUN 场景可设为 0 关闭。Mihomo Party / Clash Verge 等 GUI 通常会覆盖端口设置
  */
@@ -992,8 +1000,8 @@ function main(config) {
     // 广告拦截必须先于所有服务分流
     ...rejectServiceRules,
 
-    // 禁用国外 QUIC 流量
-    quicBlockRule,
+    // 禁用国外 QUIC 流量（可由 enableQuicBlock 关闭，见静态配置区说明）
+    ...(enableQuicBlock ? [quicBlockRule] : []),
 
     // 强制代理（github 需在 Microsoft 分流之前）
     ...forceProxyRules,
