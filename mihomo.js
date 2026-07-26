@@ -47,6 +47,7 @@ const apiSecret = '';
  */
 const ruleOptionsEnable = {
   AI: true, // 国外AI服务
+  Crypto: true, // 加密货币交易所/钱包（Bybit、SafePal、币安等）
   Media: true, // 国外视频平台
   Instagram: true, // Instagram社交平台
   FCM: true, // GoogleFCM服务
@@ -278,6 +279,32 @@ const serviceConfigs = [
     },
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png',
     rules: ['RULE-SET,ai,AI'],
+  },
+  {
+    // 交易所/钱包类金融应用对出口 IP 风控严格：Bybit 等封锁美国、新加坡、英国、
+    // 大陆等地区出口，SafePal Bank（Fiat24）等银行服务还会拦截数据中心 IP。
+    // 默认直连（台湾等可直连地区适用）；在受限网络环境请手动切到香港/日本等未被封锁的出口。
+    name: 'Crypto',
+    direct: true,
+    defaultSelected: '直连',
+    providers: {
+      cryptocurrency: {
+        ...ruleProviderCommonDomain,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-cryptocurrency.mrs',
+        path: './ruleset/cryptocurrency.mrs',
+        'path-in-bundle': 'geo/geosite/category-cryptocurrency.mrs',
+      },
+    },
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bitcoin.png',
+    rules: [
+      // 显式域名兜底，避免规则集缺失或更新滞后导致 App 断网
+      'DOMAIN-SUFFIX,safepal.com,Crypto',
+      'DOMAIN-SUFFIX,safepal.io,Crypto',
+      'DOMAIN-SUFFIX,bybit.com,Crypto',
+      'DOMAIN-SUFFIX,bybitglobal.com,Crypto',
+      'DOMAIN-SUFFIX,bycsi.com,Crypto',
+      'RULE-SET,cryptocurrency,Crypto',
+    ],
   },
   {
     name: 'Media',
