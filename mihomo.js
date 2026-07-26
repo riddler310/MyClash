@@ -749,7 +749,7 @@ function main(config) {
     {
       ...selectBaseOption,
       name: '漏网之鱼',
-      proxies: ['默认代理', '手动选择', '直连'],
+      proxies: ['默认代理', '手动选择', ...groupNamesOfSelect, '直连'],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png',
     },
     {
