@@ -42,7 +42,7 @@ const enableSniffer = false;
  * UDP 的 REJECT 表现为静默丢包，QUIC 优先的 App 需要干等超时，可能直接报网络错误。
  * 若旁路由环境下出现"浏览器正常、App 报错"，可将其设为 false 测试
  */
-const enableQuicBlock = false;
+const enableQuicBlock = true;
 
 /**
  * 混合端口（HTTP + SOCKS5）。allow-lan 局域网共享必须有监听端口才生效；
