@@ -15,6 +15,8 @@
  * 5. IPv6 由 enableIPv6 统一控制（原版全局与 DNS 均关 IPv6，"IPv6优先"直连出口形同虚设）
  * 6. excludeFilter 中裸 "com" 收紧为 "\.com"，降低误伤正常节点名的概率
  * 7. 小修：直连组重复 url、allNodes 组空 proxies 数组、无节点时报错区分 proxy-providers 场景
+ * 8. 将 Instagram 分流组升级为 META 全系：覆盖 Facebook / Instagram / WhatsApp / Threads / Meta
+ *    并补充 Facebook GeoIP 规则，提升非域名连接的命中率
  *
  * 注意：default-selected / empty-fallback / path-in-bundle 均为较新内核字段，
  * 请使用较新版本的 mihomo 内核（旧内核会忽略这些字段，功能降级但不报错）。
@@ -48,7 +50,7 @@ const apiSecret = '';
 const ruleOptionsEnable = {
   AI: true, // 国外AI服务
   Media: true, // 国外视频平台
-  Instagram: true, // Instagram社交平台
+  'META全系': true, // META全系（Facebook / Instagram / WhatsApp / Threads / Meta）
   FCM: true, // GoogleFCM服务
   Google: true, // Google服务
   Microsoft: true, // Microsoft服务
@@ -352,17 +354,55 @@ const serviceConfigs = [
     ],
   },
   {
-    name: 'Instagram',
+    // META 全系：Facebook / Instagram / WhatsApp / Threads / Meta
+    name: 'META全系',
     providers: {
-      instagram: {
+      meta_facebook: {
+        ...ruleProviderCommonDomain,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/facebook.mrs',
+        path: './ruleset/meta-facebook.mrs',
+        'path-in-bundle': 'geo/geosite/facebook.mrs',
+      },
+      meta_instagram: {
         ...ruleProviderCommonDomain,
         url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs',
-        path: './ruleset/instagram.mrs',
+        path: './ruleset/meta-instagram.mrs',
         'path-in-bundle': 'geo/geosite/instagram.mrs',
       },
+      meta_whatsapp: {
+        ...ruleProviderCommonDomain,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/whatsapp.mrs',
+        path: './ruleset/meta-whatsapp.mrs',
+        'path-in-bundle': 'geo/geosite/whatsapp.mrs',
+      },
+      meta_threads: {
+        ...ruleProviderCommonDomain,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/threads.mrs',
+        path: './ruleset/meta-threads.mrs',
+        'path-in-bundle': 'geo/geosite/threads.mrs',
+      },
+      meta: {
+        ...ruleProviderCommonDomain,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/meta.mrs',
+        path: './ruleset/meta.mrs',
+        'path-in-bundle': 'geo/geosite/meta.mrs',
+      },
+      meta_facebook_ip: {
+        ...ruleProviderCommonIpcidr,
+        url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/facebook.mrs',
+        path: './ruleset/meta-facebook_ip.mrs',
+        'path-in-bundle': 'geo/geoip/facebook.mrs',
+      },
     },
-    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Instagram.png',
-    rules: ['RULE-SET,instagram,Instagram'],
+    icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png',
+    rules: [
+      'RULE-SET,meta_facebook,META全系',
+      'RULE-SET,meta_instagram,META全系',
+      'RULE-SET,meta_whatsapp,META全系',
+      'RULE-SET,meta_threads,META全系',
+      'RULE-SET,meta,META全系',
+      'RULE-SET,meta_facebook_ip,META全系,no-resolve',
+    ],
   },
   {
     name: 'FCM',
