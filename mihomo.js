@@ -295,7 +295,7 @@ const serviceConfigs = [
 
   {
     name: 'Media',
-    defaultSelected: '日本',
+    defaultSelected: '香港',
     providers: {
       youtube: {
         ...ruleProviderCommonDomain,
@@ -379,7 +379,7 @@ const serviceConfigs = [
   {
     // META 全系：Facebook / Instagram / WhatsApp / Threads / Meta
     name: 'Meta',
-
+    defaultSelected: '台湾'
     providers: {
       meta_facebook: {
         ...ruleProviderCommonDomain,
