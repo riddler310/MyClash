@@ -553,7 +553,7 @@ const serviceConfigs = [
       'DOMAIN-SUFFIX,nodeseek.org,NS',
       'DOMAIN-SUFFIX,seek.li,NS',
       'DOMAIN-SUFFIX,nodeimage.com,NS',
-    ]
+    ],
   },
 
   {
