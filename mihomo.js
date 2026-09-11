@@ -379,7 +379,7 @@ const serviceConfigs = [
   {
     // META 全系：Facebook / Instagram / WhatsApp / Threads / Meta
     name: 'Meta',
-    defaultSelected: '台湾'
+    defaultSelected: '台湾',
     providers: {
       meta_facebook: {
         ...ruleProviderCommonDomain,
@@ -548,7 +548,12 @@ const serviceConfigs = [
 
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png',
 
-    rules: ['DOMAIN-SUFFIX,nodeseek.com,NS'],
+    rules: [
+      'DOMAIN-SUFFIX,nodeseek.com,NS',
+      'DOMAIN-SUFFIX,nodeseek.org,NS',
+      'DOMAIN-SUFFIX,seek.li,NS',
+      'DOMAIN-SUFFIX,nodeimage.com,NS',
+    ],
   },
 
   {
