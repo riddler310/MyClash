@@ -17,6 +17,7 @@
  * 7. 小修：直连组重复 url、allNodes 组空 proxies 数组、无节点时报错区分 proxy-providers 场景
  * 8. 将 Instagram 分流组升级为 Meta：覆盖 Facebook / Instagram / WhatsApp / Threads / Meta
  *    并补充 Facebook GeoIP 规则，提升非域名连接的命中率
+ * 9. 删除负载均衡策略组及所有相关引用
  *
  * 注意：default-selected / empty-fallback / path-in-bundle 均为较新内核字段，
  * 请使用较新版本的 mihomo 内核（旧内核会忽略这些字段，功能降级但不报错）。
@@ -85,7 +86,7 @@ const forceProxyRules = ['RULE-SET,github,默认代理'];
 
 // 国内直连
 const cnDirectRules = [
-  'RULE-SET,games_cn,直连', // 已包含 steam 下载域名
+  'RULE-SET,games_cn,直连',
   'RULE-SET,epicgames,直连',
   'RULE-SET,nvidia_cn,直连',
   'RULE-SET,apple_cn,直连',
@@ -266,21 +267,12 @@ const urlTestBaseOption = {
   hidden: true,
 };
 
-// load-balance策略组通用配置
-const loadBalanceBaseOption = {
-  ...groupBaseOption,
-  type: 'load-balance',
-  strategy: 'sticky-sessions',
-  'exclude-type': 'DIRECT',
-  icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png',
-  hidden: true,
-};
-
 // 定义分流策略组配置
 const serviceConfigs = [
   {
     name: 'AI',
     defaultSelected: '美国',
+
     providers: {
       ai: {
         ...ruleProviderCommonDomain,
@@ -289,13 +281,16 @@ const serviceConfigs = [
         'path-in-bundle': 'geo/geosite/category-ai-!cn.mrs',
       },
     },
+
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png',
+
     rules: ['RULE-SET,ai,AI'],
   },
 
   {
     name: 'Media',
     defaultSelected: '香港',
+
     providers: {
       youtube: {
         ...ruleProviderCommonDomain,
@@ -380,6 +375,7 @@ const serviceConfigs = [
     // META 全系：Facebook / Instagram / WhatsApp / Threads / Meta
     name: 'Meta',
     defaultSelected: '台湾',
+
     providers: {
       meta_facebook: {
         ...ruleProviderCommonDomain,
@@ -476,7 +472,10 @@ const serviceConfigs = [
 
     icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png',
 
-    rules: ['RULE-SET,google,Google', 'RULE-SET,google_ip,Google,no-resolve'],
+    rules: [
+      'RULE-SET,google,Google',
+      'RULE-SET,google_ip,Google,no-resolve',
+    ],
   },
 
   {
@@ -834,8 +833,8 @@ function main(config) {
   // --- 构建分流策略组 ---
 
   const functionalGroups = [];
-  const serviceRules = []; // 普通服务分流规则
-  const rejectServiceRules = []; // 拦截类规则（广告等），必须先于服务分流匹配
+  const serviceRules = [];
+  const rejectServiceRules = [];
   const finalRuleProviders = { ...baseRuleProviders };
 
   // 筛选类型为 select 的地区策略组
@@ -848,7 +847,7 @@ function main(config) {
     {
       ...selectBaseOption,
       name: '默认代理',
-      proxies: [...groupNamesOfSelect, '手动选择', '自动选择', '负载均衡'],
+      proxies: [...groupNamesOfSelect, '手动选择', '自动选择'],
       icon: 'https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png',
     },
 
@@ -863,12 +862,6 @@ function main(config) {
     {
       ...urlTestBaseOption,
       name: '自动选择',
-      'include-all': true,
-    },
-
-    {
-      ...loadBalanceBaseOption,
-      name: '负载均衡',
       'include-all': true,
     },
   );
@@ -892,7 +885,6 @@ function main(config) {
             '默认代理',
             '手动选择',
             '自动选择',
-            '负载均衡',
             ...groupNamesOfSelect,
             ...(svc.direct ? ['直连'] : []),
           ];
@@ -944,7 +936,7 @@ function main(config) {
     },
   );
 
-  // 构建 GLOBAL 全局策略组（新版内核支持自定义 GLOBAL，用于控制全局模式下的展示）
+  // 构建 GLOBAL 全局策略组
   const globalGroup = {
     ...selectBaseOption,
     name: 'GLOBAL',
@@ -1014,6 +1006,7 @@ function main(config) {
     'use-system-hosts': true,
     'enhanced-mode': 'fake-ip',
     'fake-ip-range': '198.18.0.1/16',
+
     'fake-ip-filter': [
       'rule-set:private',
       'rule-set:fakeip_filter',
