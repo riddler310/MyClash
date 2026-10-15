@@ -1568,6 +1568,24 @@ function main(config) {
   newConfig.proxies = [
     ...filteredProxies,
 
+    // EasyTier 家庭组网节点
+    {
+      name: 'EasyTier-Home',
+      type: 'easytier',
+      'network-name': 'myhome-7f3a9c',
+      'network-secret': 'EEj1UlMwvq1VXIKahHJGKJEa',
+      ipv4: '10.126.126.2/24',
+      hostname: 'android-phone',
+      peers: [
+        'tcp://106.52.40.187:11010',
+        'udp://106.52.40.187:11010',
+      ],
+      udp: true,
+      mtu: 1380,
+      'enable-encryption': true,
+      'latency-first': true,
+    },
+
     {
       name: '🇨🇳 直连 | IPv4优先',
 
@@ -1637,6 +1655,10 @@ function main(config) {
   // ==========================================================
 
   newConfig.rules = [
+    // EasyTier：访问家庭局域网及 EasyTier 虚拟网段
+    'IP-CIDR,192.168.5.0/24,EasyTier-Home,no-resolve',
+    'IP-CIDR,10.126.126.0/24,EasyTier-Home,no-resolve',
+
     // 飞牛 NAS（192.168.5.5）强制直连
     'SRC-IP-CIDR,192.168.5.5/32,DIRECT',
 
