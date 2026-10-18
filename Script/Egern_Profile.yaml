@@ -6,789 +6,866 @@ vif_only: false
 block_quic: false
 close_connections_on_policy_change: true
 hijack_dns:
-  - '*'
-proxy_latency_test_url: "http://www.gstatic.com/generate_204"
-direct_latency_test_url: "http://wifi.vivo.com.cn/generate_204"
+- '*'
+proxy_latency_test_url: http://www.gstatic.com/generate_204
+direct_latency_test_url: http://wifi.vivo.com.cn/generate_204
 real_ip_domains:
-  - '*.lan'
-  - '*.local'
-  - '*.push.apple.com'
+- '*.lan'
+- '*.local'
+- '*.push.apple.com'
 dns:
   bootstrap:
-    - system
-    - 223.5.5.5
-    - 119.29.29.29
+  - system
+  - 223.5.5.5
+  - 119.29.29.29
   upstreams:
     Domestic-DNS:
-      - 223.5.5.5
-      - 119.29.29.29
-    Domestic-Encrypted-DNS:
-      - https://dns.alidns.com/dns-query
-      - https://doh.pub/dns-query
-    Foreign-Encrypted-DNS:
-      - https://cloudflare-dns.com/dns-query
-      - https://dns.google/dns-query
-  forward:
-    - proxy_rule_set:
-        match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml"
-        value: reject
-        update_interval: 86400
-    - proxy_rule_set:
-        match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml"
-        value: Domestic-Encrypted-DNS
-        update_interval: 86400
-    - wildcard:
-        match: '*'
-        value: Foreign-Encrypted-DNS
-  proxy_nameservers:
     - 223.5.5.5
     - 119.29.29.29
+    Domestic-Encrypted-DNS:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+    Foreign-Encrypted-DNS:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+  forward:
+  - proxy_rule_set:
+      match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
+      value: reject
+      update_interval: 86400
+  - proxy_rule_set:
+      match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
+      value: Domestic-Encrypted-DNS
+      update_interval: 86400
+  - wildcard:
+      match: '*'
+      value: Foreign-Encrypted-DNS
+  proxy_nameservers:
+  - 223.5.5.5
+  - 119.29.29.29
   hosts:
     services.googleapis.cn: services.googleapis.com
     '*.mcdn.bilivideo.com': 0.0.0.0
     '*.mcdn.bilivideo.cn': 0.0.0.0
     '*.edge.mountaintoys.cn': 0.0.0.0
 policy_groups:
-  - external:
-      name: Manual
-      type: select
-      urls:
-        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
-      filter: '^(?!.*(?:群|❌|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|备用|过期|已用|联系|邮箱|工单|通知|倒卖|国内|地址|频道|说明|使用|提示|访问|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|登录|禁止|定时|渠道|牢记|永久|余额|刷新|导航|建议|重置|⚠️|expire|traffic)).+$'
-      update_interval: 86400
-      hidden: false
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png"
-  - select:
-      name: 手动选择
-      policies:
-        - Manual
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png"
-      flatten: true
-  - auto_test:
-      name: 自动选择
-      policies:
-        - Manual
-      flatten: true
-      filter: '.+'
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
-      interval: 600
-      tolerance: 50
-      timeout: 5
-  - select:
-      name: 默认代理
-      policies:
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-        - 手动选择
-        - 自动选择
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
-  - select:
-      name: AI
-      policies:
-        - 台湾省
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
-  - select:
-      name: Media
-      policies:
-        - 香港
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png"
-  - select:
-      name: Meta
-      policies:
-        - 台湾省
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png"
-  - select:
-      name: FCM
-      policies:
-        - DIRECT
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png"
-  - select:
-      name: Google
-      policies:
-        - 台湾省
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
-  - select:
-      name: Microsoft
-      policies:
-        - 默认代理
-        - DIRECT
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
-  - select:
-      name: Apple
-      policies:
-        - 默认代理
-        - DIRECT
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
-  - select:
-      name: Telegram
-      policies:
-        - 新加坡
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
-  - select:
-      name: NS
-      policies:
-        - Manual
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png"
-      flatten: true
-      filter: '.+'
-  - select:
-      name: Steam
-      policies:
-        - 默认代理
-        - DIRECT
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png"
-  - select:
-      name: TikTok
-      policies:
-        - 日本
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png"
-  - select:
-      name: Twitter
-      policies:
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png"
-  - select:
-      name: Emby
-      policies:
-        - DIRECT
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
-  - select:
-      name: Spotify
-      policies:
-        - 台湾省
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 美国
-        - 新加坡
-        - 其他节点
-        - DIRECT
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png"
-  - select:
-      name: 直连
-      policies:
-        - DIRECT
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png"
-  - select:
-      name: 漏网之鱼
-      policies:
-        - 美国
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 香港
-        - 日本
-        - 新加坡
-        - 台湾省
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png"
-  - select:
-      name: GLOBAL
-      policies:
-        - 默认代理
-        - 手动选择
-        - 自动选择
-        - 漏网之鱼
-        - 直连
-        - AI
-        - Media
-        - Meta
-        - FCM
-        - Google
-        - Microsoft
-        - Apple
-        - Telegram
-        - NS
-        - Steam
-        - TikTok
-        - Twitter
-        - Emby
-        - Spotify
-        - 香港-自动选择
-        - 香港
-        - 日本-自动选择
-        - 日本
-        - 美国-自动选择
-        - 美国
-        - 新加坡-自动选择
-        - 新加坡
-        - 台湾省-自动选择
-        - 台湾省
-        - 其他节点-自动选择
-        - 其他节点
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
-  - auto_test:
-      name: 香港-自动选择
-      policies:
-        - Manual
-      flatten: true
-      filter: '(?i)(🇭🇰|香港|\bHK\b|Hong.?Kong)'
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
-      hidden: true
-      interval: 600
-      tolerance: 50
-      timeout: 5
-  - select:
-      name: 香港
-      policies:
-        - 香港-自动选择
-      urls:
-        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
-      filter: '(?i)(🇭🇰|香港|\bHK\b|Hong.?Kong)'
-      update_interval: 86400
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
-  - auto_test:
-      name: 日本-自动选择
-      policies:
-        - Manual
-      flatten: true
-      filter: '(?i)(🇯🇵|日本|东京|大阪|\bJP\b|Japan)'
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
-      hidden: true
-      interval: 600
-      tolerance: 50
-      timeout: 5
-  - select:
-      name: 日本
-      policies:
-        - 日本-自动选择
-      urls:
-        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
-      filter: '(?i)(🇯🇵|日本|东京|大阪|\bJP\b|Japan)'
-      update_interval: 86400
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
-  - auto_test:
-      name: 美国-自动选择
-      policies:
-        - Manual
-      flatten: true
-      filter: '(?i)(🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States)'
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
-      hidden: true
-      interval: 600
-      tolerance: 50
-      timeout: 5
-  - select:
-      name: 美国
-      policies:
-        - 美国-自动选择
-      urls:
-        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
-      filter: '(?i)(🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States)'
-      update_interval: 86400
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
-  - auto_test:
-      name: 新加坡-自动选择
-      policies:
-        - Manual
-      flatten: true
-      filter: '(?i)(🇸🇬|新加坡|狮城|\bSG\b|Singapore)'
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
-      hidden: true
-      interval: 600
-      tolerance: 50
-      timeout: 5
-  - select:
-      name: 新加坡
-      policies:
-        - 新加坡-自动选择
-      urls:
-        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
-      filter: '(?i)(🇸🇬|新加坡|狮城|\bSG\b|Singapore)'
-      update_interval: 86400
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
-  - auto_test:
-      name: 台湾省-自动选择
-      policies:
-        - Manual
-      flatten: true
-      filter: '(?i)(🇹🇼|台湾|台灣|\bTW\b|Taiwan)'
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
-      hidden: true
-      interval: 600
-      tolerance: 50
-      timeout: 5
-  - select:
-      name: 台湾省
-      policies:
-        - 台湾省-自动选择
-      urls:
-        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
-      filter: '(?i)(🇹🇼|台湾|台灣|\bTW\b|Taiwan)'
-      update_interval: 86400
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
-  - auto_test:
-      name: 其他节点-自动选择
-      policies:
-        - Manual
-      flatten: true
-      filter: '(?i)^(?!.*(?:🇭🇰|香港|\bHK\b|Hong.?Kong|🇯🇵|日本|东京|大阪|\bJP\b|Japan|🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|🇸🇬|新加坡|狮城|\bSG\b|Singapore|🇹🇼|台湾|台灣|\bTW\b|Taiwan)).+$'
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
-      hidden: true
-      interval: 600
-      tolerance: 50
-      timeout: 5
-  - select:
-      name: 其他节点
-      policies:
-        - 其他节点-自动选择
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png"
-      filter: '(?i)^(?!.*(?:🇭🇰|香港|\bHK\b|Hong.?Kong|🇯🇵|日本|东京|大阪|\bJP\b|Japan|🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|🇸🇬|新加坡|狮城|\bSG\b|Singapore|🇹🇼|台湾|台灣|\bTW\b|Taiwan)).+$'
-
-      urls:
-        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
-      update_interval: 86400
+- external:
+    name: Manual
+    type: select
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    filter: ^(?!.*(?:群|❌|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|备用|过期|已用|联系|邮箱|工单|通知|倒卖|国内|地址|频道|说明|使用|提示|访问|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|登录|禁止|定时|渠道|牢记|永久|余额|刷新|导航|建议|重置|⚠️|expire|traffic)).+$
+    update_interval: 86400
+    hidden: false
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
+- select:
+    name: 手动选择
+    policies:
+    - Manual
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
+    flatten: true
+- auto_test:
+    name: 自动选择
+    policies:
+    - Manual
+    flatten: true
+    filter: .+
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    interval: 600
+    tolerance: 50
+    timeout: 5
+- select:
+    name: 默认代理
+    policies:
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    - 手动选择
+    - 自动选择
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+- select:
+    name: AI
+    policies:
+    - 台湾省-自动选择
+    - 台湾省
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png
+- select:
+    name: Media
+    policies:
+    - 香港-自动选择
+    - 香港
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
+- select:
+    name: Meta
+    policies:
+    - 台湾省-自动选择
+    - 台湾省
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png
+- select:
+    name: FCM
+    policies:
+    - DIRECT
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png
+- select:
+    name: Google
+    policies:
+    - 台湾省-自动选择
+    - 台湾省
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png
+- select:
+    name: Microsoft
+    policies:
+    - 默认代理
+    - DIRECT
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
+- select:
+    name: Apple
+    policies:
+    - 默认代理
+    - DIRECT
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png
+- select:
+    name: Telegram
+    policies:
+    - 新加坡-自动选择
+    - 新加坡
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+- select:
+    name: NS
+    policies:
+    - Manual
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png
+    flatten: true
+    filter: .+
+- select:
+    name: Steam
+    policies:
+    - 默认代理
+    - DIRECT
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
+- select:
+    name: TikTok
+    policies:
+    - 日本-自动选择
+    - 日本
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png
+- select:
+    name: Twitter
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png
+- select:
+    name: Emby
+    policies:
+    - DIRECT
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png
+- select:
+    name: Spotify
+    policies:
+    - 台湾省-自动选择
+    - 台湾省
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 其他节点-自动选择
+    - 其他节点
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
+- select:
+    name: 直连
+    policies:
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png
+- select:
+    name: 漏网之鱼
+    policies:
+    - 美国-自动选择
+    - 美国
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png
+- select:
+    name: GLOBAL
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 漏网之鱼
+    - 直连
+    - AI
+    - Media
+    - Meta
+    - FCM
+    - Google
+    - Microsoft
+    - Apple
+    - Telegram
+    - NS
+    - Steam
+    - TikTok
+    - Twitter
+    - Emby
+    - Spotify
+    - 香港-自动选择
+    - 香港
+    - 日本-自动选择
+    - 日本
+    - 美国-自动选择
+    - 美国
+    - 新加坡-自动选择
+    - 新加坡
+    - 台湾省-自动选择
+    - 台湾省
+    - 其他节点-自动选择
+    - 其他节点
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
+- auto_test:
+    name: 香港-自动选择
+    policies:
+    - Manual
+    flatten: true
+    filter: (?i)(🇭🇰|香港|\bHK\b|Hong.?Kong|HKG)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    hidden: false
+    interval: 600
+    tolerance: 50
+    timeout: 5
+- select:
+    name: 香港
+    policies:
+    - Manual
+    filter: (?i)(🇭🇰|香港|\bHK\b|Hong.?Kong|HKG)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
+    flatten: true
+- auto_test:
+    name: 日本-自动选择
+    policies:
+    - Manual
+    flatten: true
+    filter: (?i)(🇯🇵|日本|东京|大阪|\bJP\b|Japan|JPN)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    hidden: false
+    interval: 600
+    tolerance: 50
+    timeout: 5
+- select:
+    name: 日本
+    policies:
+    - Manual
+    filter: (?i)(🇯🇵|日本|东京|大阪|\bJP\b|Japan|JPN)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+    flatten: true
+- auto_test:
+    name: 美国-自动选择
+    policies:
+    - Manual
+    flatten: true
+    filter: (?i)(🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|USA)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    hidden: false
+    interval: 600
+    tolerance: 50
+    timeout: 5
+- select:
+    name: 美国
+    policies:
+    - Manual
+    filter: (?i)(🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|USA)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+    flatten: true
+- auto_test:
+    name: 新加坡-自动选择
+    policies:
+    - Manual
+    flatten: true
+    filter: (?i)(🇸🇬|新加坡|狮城|\bSG\b|Singapore|SGP)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    hidden: false
+    interval: 600
+    tolerance: 50
+    timeout: 5
+- select:
+    name: 新加坡
+    policies:
+    - Manual
+    filter: (?i)(🇸🇬|新加坡|狮城|\bSG\b|Singapore|SGP)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+    flatten: true
+- auto_test:
+    name: 台湾省-自动选择
+    policies:
+    - Manual
+    flatten: true
+    filter: (?i)(🇹🇼|台湾|台灣|\bTW\b|Taiwan|TWN)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    hidden: false
+    interval: 600
+    tolerance: 50
+    timeout: 5
+- select:
+    name: 台湾省
+    policies:
+    - Manual
+    filter: (?i)(🇹🇼|台湾|台灣|\bTW\b|Taiwan|TWN)
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+    flatten: true
+- auto_test:
+    name: 其他节点-自动选择
+    policies:
+    - Manual
+    flatten: true
+    filter: (?i)^(?!.*(?:🇭🇰|香港|\bHK\b|Hong.?Kong|HKG|🇯🇵|日本|东京|大阪|\bJP\b|Japan|JPN|🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|USA|🇸🇬|新加坡|狮城|\bSG\b|Singapore|SGP|🇹🇼|台湾|台灣|\bTW\b|Taiwan|TWN)).+$
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+    hidden: false
+    interval: 600
+    tolerance: 50
+    timeout: 5
+- select:
+    name: 其他节点
+    policies:
+    - Manual
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png
+    filter: (?i)^(?!.*(?:🇭🇰|香港|\bHK\b|Hong.?Kong|HKG|🇯🇵|日本|东京|大阪|\bJP\b|Japan|JPN|🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|USA|🇸🇬|新加坡|狮城|\bSG\b|Singapore|SGP|🇹🇼|台湾|台灣|\bTW\b|Taiwan|TWN)).+$
+    flatten: true
 rules:
-  - domain_suffix:
-      match: lan
-      policy: DIRECT
-  - domain_suffix:
-      match: local
-      policy: DIRECT
-  - ip_cidr:
-      match: 10.0.0.0/8
-      policy: DIRECT
-  - ip_cidr:
-      match: 172.16.0.0/12
-      policy: DIRECT
-  - ip_cidr:
-      match: 192.168.0.0/16
-      policy: DIRECT
-  - ip_cidr:
-      match: 127.0.0.0/8
-      policy: DIRECT
-  - ip_cidr:
-      match: 169.254.0.0/16
-      policy: DIRECT
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml"
-      policy: REJECT
-      update_interval: 86400
-  - and:
-      name: 拦截境外 QUIC
-      match:
-        - protocol:
-            match: udp
-        - dest_port:
-            match: '443'
-        - not:
-            match:
-              domain_suffix:
-                match: cn
-        - not:
-            match:
-              geoip:
-                match: CN
-      policy: REJECT
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Github.yaml"
-      policy: 默认代理
-      update_interval: 86400
-  - domain_suffix:
-      match: dns.alidns.com
-      policy: DIRECT
-  - domain_suffix:
-      match: doh.pub
-      policy: DIRECT
-  - domain_suffix:
-      match: cloudflare-dns.com
-      policy: 默认代理
-  - domain_suffix:
-      match: dns.cloudflare.com
-      policy: 默认代理
-  - domain_suffix:
-      match: dns.google
-      policy: 默认代理
-  - domain_suffix:
-      match: epicgames.com
-      policy: DIRECT
-  - domain_suffix:
-      match: epicgames.dev
-      policy: DIRECT
-  - domain_suffix:
-      match: epicgamescdn.com
-      policy: DIRECT
-  - domain_suffix:
-      match: epicgames-download1.akamaized.net
-      policy: DIRECT
-  - domain_suffix:
-      match: nvidia.cn
-      policy: DIRECT
-  - domain_suffix:
-      match: geforce.cn
-      policy: DIRECT
-  - domain_suffix:
-      match: apple.com.cn
-      policy: DIRECT
-  - domain_suffix:
-      match: microsoft.com.cn
-      policy: DIRECT
-  - domain_suffix:
-      match: microsoft.cn
-      policy: DIRECT
-  - domain_suffix:
-      match: windows.com.cn
-      policy: DIRECT
-  - domain_suffix:
-      match: office.com.cn
-      policy: DIRECT
-  - domain:
-      match: international-gfe.download.nvidia.com
-      policy: DIRECT
-  - domain:
-      match: fsend.cn
-      policy: DIRECT
-  - domain_suffix:
-      match: openai.com
-      policy: AI
-  - domain_suffix:
-      match: chatgpt.com
-      policy: AI
-  - domain_suffix:
-      match: oaistatic.com
-      policy: AI
-  - domain_suffix:
-      match: oaiusercontent.com
-      policy: AI
-  - domain_suffix:
-      match: openaiusercontent.com
-      policy: AI
-  - domain_suffix:
-      match: sora.com
-      policy: AI
-  - domain_suffix:
-      match: anthropic.com
-      policy: AI
-  - domain_suffix:
-      match: claude.ai
-      policy: AI
-  - domain_suffix:
-      match: claudeusercontent.com
-      policy: AI
-  - domain_suffix:
-      match: x.ai
-      policy: AI
-  - domain_suffix:
-      match: grok.com
-      policy: AI
-  - domain_suffix:
-      match: perplexity.ai
-      policy: AI
-  - domain_suffix:
-      match: pplx.ai
-      policy: AI
-  - domain_suffix:
-      match: mistral.ai
-      policy: AI
-  - domain_suffix:
-      match: cohere.com
-      policy: AI
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/YouTube.yaml"
-      policy: Media
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Netflix.yaml"
-      policy: Media
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/HBO.yaml"
-      policy: Media
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Disney.yaml"
-      policy: Media
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/PrimeVideo.yaml"
-      policy: Media
-      update_interval: 86400
-  - domain_suffix:
-      match: twitch.tv
-      policy: Media
-  - domain_suffix:
-      match: twitchcdn.net
-      policy: Media
-  - domain_suffix:
-      match: ttvnw.net
-      policy: Media
-  - domain_suffix:
-      match: ext-twitch.tv
-      policy: Media
-  - domain_suffix:
-      match: bbc.co.uk
-      policy: Media
-  - domain_suffix:
-      match: bbc.com
-      policy: Media
-  - domain_suffix:
-      match: bbci.co.uk
-      policy: Media
-  - domain_suffix:
-      match: niconico.jp
-      policy: Media
-  - domain_suffix:
-      match: nicovideo.jp
-      policy: Media
-  - domain_suffix:
-      match: dmc.nico
-      policy: Media
-  - domain_suffix:
-      match: pornhub.com
-      policy: Media
-  - domain_suffix:
-      match: phncdn.com
-      policy: Media
-  - domain_suffix:
-      match: pornhubpremium.com
-      policy: Media
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Facebook.yaml"
-      policy: Meta
-      update_interval: 86400
-  - domain_suffix:
-      match: instagram.com
-      policy: Meta
-  - domain_suffix:
-      match: cdninstagram.com
-      policy: Meta
-  - domain_suffix:
-      match: whatsapp.com
-      policy: Meta
-  - domain_suffix:
-      match: whatsapp.net
-      policy: Meta
-  - domain_suffix:
-      match: whatsapp.org
-      policy: Meta
-  - domain_suffix:
-      match: threads.net
-      policy: Meta
-  - domain_suffix:
-      match: threads.com
-      policy: Meta
-  - domain_suffix:
-      match: meta.com
-      policy: Meta
-  - domain_suffix:
-      match: fbcdn.net
-      policy: Meta
-  - domain_suffix:
-      match: fbsbx.com
-      policy: Meta
-  - domain_suffix:
-      match: messenger.com
-      policy: Meta
-  - domain_suffix:
-      match: mtalk.google.com
-      policy: FCM
-  - domain_suffix:
-      match: mtalk4.google.com
-      policy: FCM
-  - domain_suffix:
-      match: mtalk.googleusercontent.com
-      policy: FCM
-  - domain_suffix:
-      match: fcm.googleapis.com
-      policy: FCM
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Google.yaml"
-      policy: Google
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Microsoft.yaml"
-      policy: Microsoft
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/AppleProxy.yaml"
-      policy: Apple
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Telegram.yaml"
-      policy: Telegram
-      update_interval: 86400
-  - domain_suffix:
-      match: nodeseek.com
-      policy: NS
-  - domain_suffix:
-      match: nodeseek.org
-      policy: NS
-  - domain_suffix:
-      match: seek.li
-      policy: NS
-  - domain_suffix:
-      match: nodeimage.com
-      policy: NS
-  - domain_suffix:
-      match: steampowered.com
-      policy: Steam
-  - domain_suffix:
-      match: steamcommunity.com
-      policy: Steam
-  - domain_suffix:
-      match: steamstatic.com
-      policy: Steam
-  - domain_suffix:
-      match: steamcontent.com
-      policy: Steam
-  - domain_suffix:
-      match: steamserver.net
-      policy: Steam
-  - domain_suffix:
-      match: steam-chat.com
-      policy: Steam
-  - domain_suffix:
-      match: steamgames.com
-      policy: Steam
-  - domain_suffix:
-      match: steamusercontent.com
-      policy: Steam
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/TikTok.yaml"
-      policy: TikTok
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Twitter.yaml"
-      policy: Twitter
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Emby.yaml"
-      policy: Emby
-      update_interval: 86400
-  - domain_suffix:
-      match: mb3admin.com
-      policy: Emby
-  - domain_keyword:
-      match: emby
-      policy: Emby
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Spotify.yaml"
-      policy: Spotify
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Proxy.yaml"
-      policy: 默认代理
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/Direct.yaml"
-      policy: DIRECT
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml"
-      policy: DIRECT
-      update_interval: 86400
-  - rule_set:
-      match: "https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaIP.yaml"
-      policy: DIRECT
-      update_interval: 86400
-  - geoip:
-      match: CN
-      policy: DIRECT
-      no_resolve: true
-  - default:
-      policy: 漏网之鱼
+- domain_suffix:
+    match: lan
+    policy: DIRECT
+- domain_suffix:
+    match: local
+    policy: DIRECT
+- ip_cidr:
+    match: 10.0.0.0/8
+    policy: DIRECT
+- ip_cidr:
+    match: 172.16.0.0/12
+    policy: DIRECT
+- ip_cidr:
+    match: 192.168.0.0/16
+    policy: DIRECT
+- ip_cidr:
+    match: 127.0.0.0/8
+    policy: DIRECT
+- ip_cidr:
+    match: 169.254.0.0/16
+    policy: DIRECT
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
+    policy: REJECT
+    update_interval: 86400
+- and:
+    name: 拦截境外 QUIC
+    match:
+    - protocol:
+        match: udp
+    - dest_port:
+        match: '443'
+    - not:
+        match:
+          domain_suffix:
+            match: cn
+    - not:
+        match:
+          geoip:
+            match: CN
+    policy: REJECT
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Github.yaml
+    policy: 默认代理
+    update_interval: 86400
+- domain_suffix:
+    match: dns.alidns.com
+    policy: DIRECT
+- domain_suffix:
+    match: doh.pub
+    policy: DIRECT
+- domain_suffix:
+    match: cloudflare-dns.com
+    policy: 默认代理
+- domain_suffix:
+    match: dns.cloudflare.com
+    policy: 默认代理
+- domain_suffix:
+    match: dns.google
+    policy: 默认代理
+- domain_suffix:
+    match: epicgames.com
+    policy: DIRECT
+- domain_suffix:
+    match: epicgames.dev
+    policy: DIRECT
+- domain_suffix:
+    match: epicgamescdn.com
+    policy: DIRECT
+- domain_suffix:
+    match: epicgames-download1.akamaized.net
+    policy: DIRECT
+- domain_suffix:
+    match: nvidia.cn
+    policy: DIRECT
+- domain_suffix:
+    match: geforce.cn
+    policy: DIRECT
+- domain_suffix:
+    match: apple.com.cn
+    policy: DIRECT
+- domain_suffix:
+    match: microsoft.com.cn
+    policy: DIRECT
+- domain_suffix:
+    match: microsoft.cn
+    policy: DIRECT
+- domain_suffix:
+    match: windows.com.cn
+    policy: DIRECT
+- domain_suffix:
+    match: office.com.cn
+    policy: DIRECT
+- domain:
+    match: international-gfe.download.nvidia.com
+    policy: DIRECT
+- domain:
+    match: fsend.cn
+    policy: DIRECT
+- domain_suffix:
+    match: openai.com
+    policy: AI
+- domain_suffix:
+    match: chatgpt.com
+    policy: AI
+- domain_suffix:
+    match: oaistatic.com
+    policy: AI
+- domain_suffix:
+    match: oaiusercontent.com
+    policy: AI
+- domain_suffix:
+    match: openaiusercontent.com
+    policy: AI
+- domain_suffix:
+    match: sora.com
+    policy: AI
+- domain_suffix:
+    match: anthropic.com
+    policy: AI
+- domain_suffix:
+    match: claude.ai
+    policy: AI
+- domain_suffix:
+    match: claudeusercontent.com
+    policy: AI
+- domain_suffix:
+    match: x.ai
+    policy: AI
+- domain_suffix:
+    match: grok.com
+    policy: AI
+- domain_suffix:
+    match: perplexity.ai
+    policy: AI
+- domain_suffix:
+    match: pplx.ai
+    policy: AI
+- domain_suffix:
+    match: mistral.ai
+    policy: AI
+- domain_suffix:
+    match: cohere.com
+    policy: AI
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/YouTube.yaml
+    policy: Media
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Netflix.yaml
+    policy: Media
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/HBO.yaml
+    policy: Media
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Disney.yaml
+    policy: Media
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/PrimeVideo.yaml
+    policy: Media
+    update_interval: 86400
+- domain_suffix:
+    match: twitch.tv
+    policy: Media
+- domain_suffix:
+    match: twitchcdn.net
+    policy: Media
+- domain_suffix:
+    match: ttvnw.net
+    policy: Media
+- domain_suffix:
+    match: ext-twitch.tv
+    policy: Media
+- domain_suffix:
+    match: bbc.co.uk
+    policy: Media
+- domain_suffix:
+    match: bbc.com
+    policy: Media
+- domain_suffix:
+    match: bbci.co.uk
+    policy: Media
+- domain_suffix:
+    match: niconico.jp
+    policy: Media
+- domain_suffix:
+    match: nicovideo.jp
+    policy: Media
+- domain_suffix:
+    match: dmc.nico
+    policy: Media
+- domain_suffix:
+    match: pornhub.com
+    policy: Media
+- domain_suffix:
+    match: phncdn.com
+    policy: Media
+- domain_suffix:
+    match: pornhubpremium.com
+    policy: Media
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Facebook.yaml
+    policy: Meta
+    update_interval: 86400
+- domain_suffix:
+    match: instagram.com
+    policy: Meta
+- domain_suffix:
+    match: cdninstagram.com
+    policy: Meta
+- domain_suffix:
+    match: whatsapp.com
+    policy: Meta
+- domain_suffix:
+    match: whatsapp.net
+    policy: Meta
+- domain_suffix:
+    match: whatsapp.org
+    policy: Meta
+- domain_suffix:
+    match: threads.net
+    policy: Meta
+- domain_suffix:
+    match: threads.com
+    policy: Meta
+- domain_suffix:
+    match: meta.com
+    policy: Meta
+- domain_suffix:
+    match: fbcdn.net
+    policy: Meta
+- domain_suffix:
+    match: fbsbx.com
+    policy: Meta
+- domain_suffix:
+    match: messenger.com
+    policy: Meta
+- domain_suffix:
+    match: mtalk.google.com
+    policy: FCM
+- domain_suffix:
+    match: mtalk4.google.com
+    policy: FCM
+- domain_suffix:
+    match: mtalk.googleusercontent.com
+    policy: FCM
+- domain_suffix:
+    match: fcm.googleapis.com
+    policy: FCM
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Google.yaml
+    policy: Google
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Microsoft.yaml
+    policy: Microsoft
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/AppleProxy.yaml
+    policy: Apple
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Telegram.yaml
+    policy: Telegram
+    update_interval: 86400
+- domain_suffix:
+    match: nodeseek.com
+    policy: NS
+- domain_suffix:
+    match: nodeseek.org
+    policy: NS
+- domain_suffix:
+    match: seek.li
+    policy: NS
+- domain_suffix:
+    match: nodeimage.com
+    policy: NS
+- domain_suffix:
+    match: steampowered.com
+    policy: Steam
+- domain_suffix:
+    match: steamcommunity.com
+    policy: Steam
+- domain_suffix:
+    match: steamstatic.com
+    policy: Steam
+- domain_suffix:
+    match: steamcontent.com
+    policy: Steam
+- domain_suffix:
+    match: steamserver.net
+    policy: Steam
+- domain_suffix:
+    match: steam-chat.com
+    policy: Steam
+- domain_suffix:
+    match: steamgames.com
+    policy: Steam
+- domain_suffix:
+    match: steamusercontent.com
+    policy: Steam
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/TikTok.yaml
+    policy: TikTok
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Twitter.yaml
+    policy: Twitter
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Emby.yaml
+    policy: Emby
+    update_interval: 86400
+- domain_suffix:
+    match: mb3admin.com
+    policy: Emby
+- domain_keyword:
+    match: emby
+    policy: Emby
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Spotify.yaml
+    policy: Spotify
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Proxy.yaml
+    policy: 默认代理
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Direct.yaml
+    policy: DIRECT
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
+    policy: DIRECT
+    update_interval: 86400
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaIP.yaml
+    policy: DIRECT
+    update_interval: 86400
+- geoip:
+    match: CN
+    policy: DIRECT
+    no_resolve: true
+- default:
+    policy: 漏网之鱼
 default_subscription_group: Manual
