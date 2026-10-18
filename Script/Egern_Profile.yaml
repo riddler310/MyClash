@@ -93,6 +93,7 @@ policy_groups:
     update_interval: 86400
     hidden: false
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
+    filter: (?i)^(?!.*(?:❌|ENC)).+$
 - select:
     name: 手动选择
     policies:
