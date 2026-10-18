@@ -226,7 +226,7 @@ policy_groups:
     flatten: true
     filter: (?i)🇨🇳|🇹🇼|台湾|(\b(TW|Tai|Taiwan)\b)
     tolerance: 0
-    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China.png
+    icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
 rules:
 - rule_set:
     match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Direct.yaml
