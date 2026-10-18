@@ -666,7 +666,7 @@ policy_groups:
     - 手动选择
     - DIRECT
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png
-# 地区组: 第一项是「X-自动选择」, 后面是订阅里按地区过滤出的节点 (urls 需与「手动选择」相同)
+# 地区组: X 里有「X-自动选择」(隐藏) 和「X-节点」两项, 节点都来自「手动选择」按地区过滤
 - auto_test:
     name: 香港-自动选择
     policies:
@@ -679,12 +679,17 @@ policy_groups:
     hidden: true
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 - select:
+    name: 香港-节点
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇭🇰|香港|HK|[Hh]ong\s*[Kk]ong'
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
+- select:
     name: 香港
     policies:
     - 香港-自动选择
-    urls:
-    - http://your-service-provider
-    filter: '🇭🇰|香港|HK|[Hh]ong\s*[Kk]ong'
+    - 香港-节点
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
 - auto_test:
     name: 日本-自动选择
@@ -698,12 +703,17 @@ policy_groups:
     hidden: true
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 - select:
+    name: 日本-节点
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇯🇵|日本|JP|[Jj]apan'
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+- select:
     name: 日本
     policies:
     - 日本-自动选择
-    urls:
-    - http://your-service-provider
-    filter: '🇯🇵|日本|JP|[Jj]apan'
+    - 日本-节点
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
 - auto_test:
     name: 美国-自动选择
@@ -717,12 +727,17 @@ policy_groups:
     hidden: true
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 - select:
+    name: 美国-节点
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇺🇸|美|夏威夷|弗尼基亚|ATT|MEGA|US|[Aa]merica|[Uu]nited\s*[Ss]tates'
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+- select:
     name: 美国
     policies:
     - 美国-自动选择
-    urls:
-    - http://your-service-provider
-    filter: '🇺🇸|美|夏威夷|弗尼基亚|ATT|MEGA|US|[Aa]merica|[Uu]nited\s*[Ss]tates'
+    - 美国-节点
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
 - auto_test:
     name: 新加坡-自动选择
@@ -736,12 +751,17 @@ policy_groups:
     hidden: true
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 - select:
+    name: 新加坡-节点
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇸🇬|新加坡|狮城|SG|[Ss]ingapore'
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+- select:
     name: 新加坡
     policies:
     - 新加坡-自动选择
-    urls:
-    - http://your-service-provider
-    filter: '🇸🇬|新加坡|狮城|SG|[Ss]ingapore'
+    - 新加坡-节点
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
 - auto_test:
     name: 台湾省-自动选择
@@ -755,12 +775,17 @@ policy_groups:
     hidden: true
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 - select:
+    name: 台湾省-节点
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇹🇼|台湾|TW|[Tt]aiwan'
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+- select:
     name: 台湾省
     policies:
     - 台湾省-自动选择
-    urls:
-    - http://your-service-provider
-    filter: '🇹🇼|台湾|TW|[Tt]aiwan'
+    - 台湾省-节点
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
 rules:
 # 屏蔽哔哩哔哩 PCDN (mihomo hosts 里指向 0.0.0.0 的三个域名)
