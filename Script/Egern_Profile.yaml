@@ -425,10 +425,12 @@ policy_groups:
 - select:
     name: 香港
     policies:
-    - Manual
+    - 香港-自动选择
     filter: (?i)(🇭🇰|香港|\bHK\b|Hong.?Kong|HKG)
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
-    flatten: true
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    update_interval: 86400
 - auto_test:
     name: 日本-自动选择
     policies:
@@ -443,10 +445,12 @@ policy_groups:
 - select:
     name: 日本
     policies:
-    - Manual
+    - 日本-自动选择
     filter: (?i)(🇯🇵|日本|东京|大阪|\bJP\b|Japan|JPN)
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
-    flatten: true
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    update_interval: 86400
 - auto_test:
     name: 美国-自动选择
     policies:
@@ -461,10 +465,12 @@ policy_groups:
 - select:
     name: 美国
     policies:
-    - Manual
+    - 美国-自动选择
     filter: (?i)(🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|USA)
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
-    flatten: true
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    update_interval: 86400
 - auto_test:
     name: 新加坡-自动选择
     policies:
@@ -479,10 +485,12 @@ policy_groups:
 - select:
     name: 新加坡
     policies:
-    - Manual
+    - 新加坡-自动选择
     filter: (?i)(🇸🇬|新加坡|狮城|\bSG\b|Singapore|SGP)
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
-    flatten: true
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    update_interval: 86400
 - auto_test:
     name: 台湾省-自动选择
     policies:
@@ -497,10 +505,12 @@ policy_groups:
 - select:
     name: 台湾省
     policies:
-    - Manual
+    - 台湾省-自动选择
     filter: (?i)(🇹🇼|台湾|台灣|\bTW\b|Taiwan|TWN)
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
-    flatten: true
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    update_interval: 86400
 - auto_test:
     name: 其他节点-自动选择
     policies:
@@ -515,10 +525,12 @@ policy_groups:
 - select:
     name: 其他节点
     policies:
-    - Manual
+    - 其他节点-自动选择
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png
     filter: (?i)^(?!.*(?:🇭🇰|香港|\bHK\b|Hong.?Kong|HKG|🇯🇵|日本|东京|大阪|\bJP\b|Japan|JPN|🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States|USA|🇸🇬|新加坡|狮城|\bSG\b|Singapore|SGP|🇹🇼|台湾|台灣|\bTW\b|Taiwan|TWN)).+$
-    flatten: true
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    update_interval: 86400
 rules:
 - domain_suffix:
     match: lan
