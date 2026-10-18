@@ -87,17 +87,13 @@ policy_groups:
     tolerance: 50
     timeout: 5
 - select:
-    name: 香港-手动选择
-    policies:
-    - 节点订阅
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
-    flatten: true
-    filter: (?i)(🇭🇰|香港|\bHK\b|Hong.?Kong)
-- select:
     name: 香港
     policies:
     - 香港-自动选择
-    - 香港-手动选择
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    filter: '(?i)(🇭🇰|香港|\bHK\b|Hong.?Kong)'
+    update_interval: 86400
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
 - auto_test:
     name: 日本-自动选择
@@ -111,17 +107,13 @@ policy_groups:
     tolerance: 50
     timeout: 5
 - select:
-    name: 日本-手动选择
-    policies:
-    - 节点订阅
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
-    flatten: true
-    filter: (?i)(🇯🇵|日本|东京|大阪|\bJP\b|Japan)
-- select:
     name: 日本
     policies:
     - 日本-自动选择
-    - 日本-手动选择
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    filter: '(?i)(🇯🇵|日本|东京|大阪|\bJP\b|Japan)'
+    update_interval: 86400
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
 - auto_test:
     name: 美国-自动选择
@@ -135,17 +127,13 @@ policy_groups:
     tolerance: 50
     timeout: 5
 - select:
-    name: 美国-手动选择
-    policies:
-    - 节点订阅
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
-    flatten: true
-    filter: (?i)(🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States)
-- select:
     name: 美国
     policies:
     - 美国-自动选择
-    - 美国-手动选择
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    filter: '(?i)(🇺🇸|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|\bUS\b|America|United.?States)'
+    update_interval: 86400
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
 - auto_test:
     name: 新加坡-自动选择
@@ -159,17 +147,13 @@ policy_groups:
     tolerance: 50
     timeout: 5
 - select:
-    name: 新加坡-手动选择
-    policies:
-    - 节点订阅
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
-    flatten: true
-    filter: (?i)(🇸🇬|新加坡|狮城|\bSG\b|Singapore)
-- select:
     name: 新加坡
     policies:
     - 新加坡-自动选择
-    - 新加坡-手动选择
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    filter: '(?i)(🇸🇬|新加坡|狮城|\bSG\b|Singapore)'
+    update_interval: 86400
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
 - auto_test:
     name: 台湾省-自动选择
@@ -183,17 +167,13 @@ policy_groups:
     tolerance: 50
     timeout: 5
 - select:
-    name: 台湾省-手动选择
-    policies:
-    - 节点订阅
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
-    flatten: true
-    filter: (?i)(🇹🇼|台湾|台灣|\bTW\b|Taiwan)
-- select:
     name: 台湾省
     policies:
     - 台湾省-自动选择
-    - 台湾省-手动选择
+    urls:
+    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
+    filter: '(?i)(🇹🇼|台湾|台灣|\bTW\b|Taiwan)'
+    update_interval: 86400
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
 - select:
     name: 其他节点
