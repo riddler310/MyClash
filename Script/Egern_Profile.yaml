@@ -9,55 +9,65 @@ proxy_latency_test_url: http://1.1.1.1/generate_204
 direct_latency_test_url: http://wifi.vivo.com.cn/generate_204
 dns:
   bootstrap:
-  - system
+  - 223.5.5.5
+  - 119.29.29.29
   upstreams:
-    Domestic-DNS:
-    - 223.5.5.5
-    - 119.29.29.29
     Domestic-Encrypted-DNS:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
     Foreign-Encrypted-DNS:
-    - https://cloudflare-dns.com/dns-query
+    - https://dns.cloudflare.com/dns-query
     - https://dns.google/dns-query
   forward:
   - proxy_rule_set:
       match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
       value: reject
       disabled: false
+      update_interval: 86400
   - proxy_rule_set:
       match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
-      value: Domestic-DNS
+      value: Domestic-Encrypted-DNS
       disabled: false
+      update_interval: 86400
   - domain_wildcard:
       match: '*'
       value: Foreign-Encrypted-DNS
       disabled: false
   hosts:
-    dns.google:
-    - 8.8.8.8
-    - 8.8.4.4
-    - 2001:4860:4860::8888
-    - 2001:4860:4860::8844
-    cloudflare-dns.com:
-    - 104.16.249.249
-    - 104.16.248.249
-    - 2606:4700::6810:f8f9
-    - 2606:4700::6810:f9f9
     dns.alidns.com:
     - 223.5.5.5
     - 223.6.6.6
-    - 2400:3200:baba::1
-    - 2400:3200::1
     doh.pub:
     - 1.12.12.12
     - 120.53.53.53
     dot.pub:
     - 1.12.12.12
     - 120.53.53.53
+    dns.cloudflare.com:
+    - 1.1.1.1
+    - 1.0.0.1
+    dns.google:
+    - 8.8.8.8
+    - 8.8.4.4
+    cloudflare-dns.com:
+    - 104.16.249.249
+    - 104.16.248.249
+    services.googleapis.cn: services.googleapis.com
+    mcdn.bilivideo.com:
+    - 0.0.0.0
+    '*.mcdn.bilivideo.com':
+    - 0.0.0.0
+    mcdn.bilivideo.cn:
+    - 0.0.0.0
+    '*.mcdn.bilivideo.cn':
+    - 0.0.0.0
+    edge.mountaintoys.cn:
+    - 0.0.0.0
+    '*.edge.mountaintoys.cn':
+    - 0.0.0.0
   proxy_nameservers:
-  - 119.29.29.29
-  - 223.5.5.5
+  - https://dns.alidns.com/dns-query
+  - https://doh.pub/dns-query
 real_ip_domains:
 - lancache.steamcontent.com
 - '*.msftconnecttest.com'
@@ -414,6 +424,26 @@ rules:
     match: fe80::/10
     name: IPv6-LinkLocal
     policy: DIRECT
+- domain:
+    match: dns.alidns.com
+    name: 国内 DoH 直连
+    policy: DIRECT
+- domain:
+    match: doh.pub
+    name: 国内 DoH 直连
+    policy: DIRECT
+- domain:
+    match: dot.pub
+    name: 国内 DoH 直连
+    policy: DIRECT
+- domain:
+    match: dns.cloudflare.com
+    name: 境外 DoH 走默认代理
+    policy: 默认代理
+- domain:
+    match: dns.google
+    name: 境外 DoH 走默认代理
+    policy: 默认代理
 - rule_set:
     match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
     policy: REJECT
@@ -979,6 +1009,8 @@ modules:
   enabled: true
 - url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/什么值得买去广告.beta.sgmodule
   enabled: true
+- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/IT之家去广告.beta.sgmodule
+  enabled: true
 - url: https://raw.githubusercontent.com/fmz200/wool_scripts/refs/heads/main/Surge/module/XWebAds.module
   enabled: true
 - url: https://raw.githubusercontent.com/Keywos/rule/main/script/wy/wy.sgmodule
@@ -1000,3 +1032,4 @@ modules:
 - name: SubStore
   url: https://raw.githubusercontent.com/sub-store-org/Sub-Store/refs/heads/master/config/Egern.yaml
   enabled: false
+ipv6: false
