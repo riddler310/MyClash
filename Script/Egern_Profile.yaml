@@ -1,0 +1,635 @@
+---
+# Egern 原生配置：按原 Mihomo 覆写脚本迁移
+# 节点来源使用你提供的 Sub-Store Egern 订阅。
+# 如订阅地址含有私密令牌，请勿公开分享。
+
+ipv6: false
+http_port: 7890
+socks_port: 7891
+allow_external_connections: false
+vif_only: false
+block_quic: false
+close_connections_on_policy_change: true
+hijack_dns:
+  - "*"
+real_ip_domains:
+  - "*.lan"
+  - "*.local"
+  - "*.push.apple.com"
+
+# 订阅节点池：地区组通过 flatten + filter 从此组筛选节点
+dns:
+  bootstrap:
+    - system
+    - 223.5.5.5
+    - 119.29.29.29
+  upstreams:
+    domestic:
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+    foreign:
+      - https://dns.cloudflare.com/dns-query
+      - https://dns.google/dns-query
+  forward:
+    - domain_suffix:
+        match: cn
+        value: domestic
+    - wildcard:
+        match: "*.cn"
+        value: domestic
+    - wildcard:
+        match: "*"
+        value: foreign
+
+policy_groups:
+  - select:
+      name: "机场订阅"
+      urls:
+        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
+      filter: ".+"
+      update_interval: 86400
+
+  - select:
+      name: "香港"
+      policies:
+        - "香港-自动选择"
+      urls:
+        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
+      filter: "(?i)香港|🇭🇰|\\bHK\\b|Hong.?Kong"
+      update_interval: 86400
+  - auto_test:
+      name: "香港-自动选择"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: "(?i)香港|🇭🇰|\\bHK\\b|Hong.?Kong"
+      interval: 600
+      tolerance: 50
+
+  - select:
+      name: "日本"
+      policies:
+        - "日本-自动选择"
+      urls:
+        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
+      filter: "(?i)日本|🇯🇵|\\bJP\\b|Japan"
+      update_interval: 86400
+  - auto_test:
+      name: "日本-自动选择"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: "(?i)日本|🇯🇵|\\bJP\\b|Japan"
+      interval: 600
+      tolerance: 50
+
+  - select:
+      name: "美国"
+      policies:
+        - "美国-自动选择"
+      urls:
+        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
+      filter: "(?i)美国|美西|美东|🇺🇸|\\bUS\\b|America|United.?States"
+      update_interval: 86400
+  - auto_test:
+      name: "美国-自动选择"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: "(?i)美国|美西|美东|🇺🇸|\\bUS\\b|America|United.?States"
+      interval: 600
+      tolerance: 50
+
+  - select:
+      name: "新加坡"
+      policies:
+        - "新加坡-自动选择"
+      urls:
+        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
+      filter: "(?i)新加坡|狮城|🇸🇬|\\bSG\\b|Singapore"
+      update_interval: 86400
+  - auto_test:
+      name: "新加坡-自动选择"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: "(?i)新加坡|狮城|🇸🇬|\\bSG\\b|Singapore"
+      interval: 600
+      tolerance: 50
+
+  - select:
+      name: "台湾省"
+      policies:
+        - "台湾省-自动选择"
+      urls:
+        - "https://rw.253768.xyz/rNnuEbY9S6zHxUPW"
+      filter: "(?i)台湾|台灣|🇹🇼|\\bTW\\b|Taiwan"
+      update_interval: 86400
+  - auto_test:
+      name: "台湾省-自动选择"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: "(?i)台湾|台灣|🇹🇼|\\bTW\\b|Taiwan"
+      interval: 600
+      tolerance: 50
+
+  - select:
+      name: "其他节点"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: "(?i)^(?!.*(香港|🇭🇰|\\bHK\\b|Hong.?Kong|日本|🇯🇵|\\bJP\\b|Japan|美国|美西|美东|🇺🇸|\\bUS\\b|America|United.?States|新加坡|狮城|🇸🇬|\\bSG\\b|Singapore|台湾|台灣|🇹🇼|\\bTW\\b|Taiwan)).+$"
+
+  - select:
+      name: "手动选择"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: ".+"
+  - auto_test:
+      name: "自动选择"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: ".+"
+      interval: 600
+      tolerance: 50
+
+  - select:
+      name: "默认代理"
+      policies:
+        - "香港"
+        - "日本"
+        - "美国"
+        - "新加坡"
+        - "台湾省"
+        - "其他节点"
+        - "手动选择"
+        - "自动选择"
+
+  - select:
+      name: "AI"
+      policies:
+        - "美国"
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+  - select:
+      name: "Media"
+      policies:
+        - "香港"
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+  - select:
+      name: "Meta"
+      policies:
+        - "台湾省"
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+  - select:
+      name: "FCM"
+      policies:
+        - DIRECT
+        - "默认代理"
+        - "手动选择"
+  - select:
+      name: "Google"
+      policies:
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+        - DIRECT
+  - select:
+      name: "Microsoft"
+      policies:
+        - DIRECT
+        - "默认代理"
+        - "手动选择"
+  - select:
+      name: "Apple"
+      policies:
+        - DIRECT
+        - "默认代理"
+        - "手动选择"
+  - select:
+      name: "Telegram"
+      policies:
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+  - select:
+      name: "NS"
+      policies:
+        - "机场订阅"
+      flatten: true
+      filter: ".+"
+  - select:
+      name: "Steam"
+      policies:
+        - DIRECT
+        - "默认代理"
+        - "手动选择"
+  - select:
+      name: "TikTok"
+      policies:
+        - "日本"
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+  - select:
+      name: "Twitter"
+      policies:
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+  - select:
+      name: "Emby"
+      policies:
+        - DIRECT
+        - "默认代理"
+        - "手动选择"
+  - select:
+      name: "Spotify"
+      policies:
+        - DIRECT
+        - "默认代理"
+        - "手动选择"
+  - select:
+      name: "漏网之鱼"
+      policies:
+        - "默认代理"
+        - "手动选择"
+        - "自动选择"
+        - "香港"
+        - "日本"
+        - "美国"
+        - "新加坡"
+        - "台湾省"
+        - DIRECT
+
+rules:
+  # 私有网络直连
+  - ip_cidr:
+      match: 10.0.0.0/8
+      policy: DIRECT
+  - ip_cidr:
+      match: 172.16.0.0/12
+      policy: DIRECT
+  - ip_cidr:
+      match: 192.168.0.0/16
+      policy: DIRECT
+  - ip_cidr:
+      match: 127.0.0.0/8
+      policy: DIRECT
+
+  # 广告拦截（常见广告域名）
+  - domain_suffix:
+      match: doubleclick.net
+      policy: REJECT
+  - domain_suffix:
+      match: googlesyndication.com
+      policy: REJECT
+  - domain_suffix:
+      match: googleadservices.com
+      policy: REJECT
+  - domain_suffix:
+      match: adservice.google.com
+      policy: REJECT
+  - domain_suffix:
+      match: app-measurement.com
+      policy: REJECT
+
+  # QUIC 拦截：只拦截 QUIC 协议，避免误拒绝所有 UDP/443 流量。
+  # 注意：这比原 Mihomo 规则更宽泛（原规则排除了国内规则/IP）。
+  - protocol:
+      match: quic
+      policy: REJECT
+
+  # GitHub 强制代理
+  - domain_suffix:
+      match: github.com
+      policy: 默认代理
+  - domain_suffix:
+      match: githubusercontent.com
+      policy: 默认代理
+  - domain_suffix:
+      match: githubassets.com
+      policy: 默认代理
+
+  # 原配置中的国内直连细分
+  - domain_suffix:
+      match: fsend.cn
+      policy: DIRECT
+  - domain:
+      match: international-gfe.download.nvidia.com
+      policy: DIRECT
+
+  # AI
+  - domain_suffix:
+      match: openai.com
+      policy: AI
+  - domain_suffix:
+      match: chatgpt.com
+      policy: AI
+  - domain_suffix:
+      match: oaistatic.com
+      policy: AI
+  - domain_suffix:
+      match: oaiusercontent.com
+      policy: AI
+  - domain_suffix:
+      match: anthropic.com
+      policy: AI
+  - domain_suffix:
+      match: claude.ai
+      policy: AI
+  - domain_suffix:
+      match: claudeusercontent.com
+      policy: AI
+  - domain_suffix:
+      match: anthropicusercontent.com
+      policy: AI
+  - domain_suffix:
+      match: x.ai
+      policy: AI
+  - domain_suffix:
+      match: grok.com
+      policy: AI
+  - domain_suffix:
+      match: perplexity.ai
+      policy: AI
+
+  # Media
+  - domain_suffix:
+      match: youtube.com
+      policy: Media
+  - domain_suffix:
+      match: youtube-nocookie.com
+      policy: Media
+  - domain_suffix:
+      match: googlevideo.com
+      policy: Media
+  - domain_suffix:
+      match: ytimg.com
+      policy: Media
+  - domain_suffix:
+      match: netflix.com
+      policy: Media
+  - domain_suffix:
+      match: netflix.net
+      policy: Media
+  - domain_suffix:
+      match: nflxvideo.net
+      policy: Media
+  - domain_suffix:
+      match: disneyplus.com
+      policy: Media
+  - domain_suffix:
+      match: hbomax.com
+      policy: Media
+  - domain_suffix:
+      match: max.com
+      policy: Media
+  - domain_suffix:
+      match: twitch.tv
+      policy: Media
+  - domain_suffix:
+      match: bbc.co.uk
+      policy: Media
+  - domain_suffix:
+      match: niconico.jp
+      policy: Media
+  - domain_suffix:
+      match: pornhub.com
+      policy: Media
+  - domain_suffix:
+      match: phncdn.com
+      policy: Media
+  - domain_suffix:
+      match: pornhubpremium.com
+      policy: Media
+
+  # Meta 全系
+  - domain_suffix:
+      match: facebook.com
+      policy: Meta
+  - domain_suffix:
+      match: facebook.net
+      policy: Meta
+  - domain_suffix:
+      match: fbcdn.net
+      policy: Meta
+  - domain_suffix:
+      match: fbsbx.com
+      policy: Meta
+  - domain_suffix:
+      match: instagram.com
+      policy: Meta
+  - domain_suffix:
+      match: cdninstagram.com
+      policy: Meta
+  - domain_suffix:
+      match: whatsapp.com
+      policy: Meta
+  - domain_suffix:
+      match: whatsapp.net
+      policy: Meta
+  - domain_suffix:
+      match: threads.net
+      policy: Meta
+  - domain_suffix:
+      match: threads.com
+      policy: Meta
+  - domain_suffix:
+      match: meta.com
+      policy: Meta
+
+  # FCM：仅匹配推送相关域名，避免把全部 Google API 流量误送到 FCM 组
+  - domain:
+      match: mtalk.google.com
+      policy: FCM
+  - domain_suffix:
+      match: googleapis.com
+      policy: Google
+
+  # Google
+  - domain_suffix:
+      match: google.com
+      policy: Google
+  - domain_suffix:
+      match: google.co.jp
+      policy: Google
+  - domain_suffix:
+      match: googleusercontent.com
+      policy: Google
+  - domain_suffix:
+      match: gstatic.com
+      policy: Google
+  - domain_suffix:
+      match: googleapis.cn
+      policy: Google
+  - domain_suffix:
+      match: play.google.com
+      policy: Google
+
+  # Microsoft
+  - domain_suffix:
+      match: microsoft.com
+      policy: Microsoft
+  - domain_suffix:
+      match: microsoftonline.com
+      policy: Microsoft
+  - domain_suffix:
+      match: live.com
+      policy: Microsoft
+  - domain_suffix:
+      match: office.com
+      policy: Microsoft
+  - domain_suffix:
+      match: windows.net
+      policy: Microsoft
+
+  # Apple
+  - domain_suffix:
+      match: apple.com
+      policy: Apple
+  - domain_suffix:
+      match: icloud.com
+      policy: Apple
+  - domain_suffix:
+      match: apple-cloudkit.com
+      policy: Apple
+
+  # Telegram
+  - domain_suffix:
+      match: t.me
+      policy: Telegram
+  - domain_suffix:
+      match: telegram.org
+      policy: Telegram
+  - domain_suffix:
+      match: telegram.me
+      policy: Telegram
+  - domain_suffix:
+      match: telegram.dog
+      policy: Telegram
+
+  # NodeSeek
+  - domain_suffix:
+      match: nodeseek.com
+      policy: NS
+  - domain_suffix:
+      match: nodeseek.org
+      policy: NS
+  - domain_suffix:
+      match: seek.li
+      policy: NS
+  - domain_suffix:
+      match: nodeimage.com
+      policy: NS
+
+  # Steam
+  - domain_suffix:
+      match: steampowered.com
+      policy: Steam
+  - domain_suffix:
+      match: steamcommunity.com
+      policy: Steam
+  - domain_suffix:
+      match: steamstatic.com
+      policy: Steam
+  - domain_suffix:
+      match: steamcontent.com
+      policy: Steam
+
+  # TikTok
+  - domain_suffix:
+      match: tiktok.com
+      policy: TikTok
+  - domain_suffix:
+      match: tiktokv.com
+      policy: TikTok
+  - domain_suffix:
+      match: tiktokcdn.com
+      policy: TikTok
+  - domain_suffix:
+      match: musical.ly
+      policy: TikTok
+
+  # Twitter / X
+  - domain_suffix:
+      match: x.com
+      policy: Twitter
+  - domain_suffix:
+      match: twitter.com
+      policy: Twitter
+  - domain_suffix:
+      match: t.co
+      policy: Twitter
+  - domain_suffix:
+      match: twimg.com
+      policy: Twitter
+
+  # Emby
+  - domain_keyword:
+      match: emby
+      policy: Emby
+  - domain_suffix:
+      match: mb3admin.com
+      policy: Emby
+
+  # Spotify
+  - domain_suffix:
+      match: spotify.com
+      policy: Spotify
+  - domain_suffix:
+      match: scdn.co
+      policy: Spotify
+  - domain_suffix:
+      match: spotifycdn.com
+      policy: Spotify
+
+  # 国内常见服务直连
+  - domain_suffix:
+      match: cn
+      policy: DIRECT
+  - domain_suffix:
+      match: baidu.com
+      policy: DIRECT
+  - domain_suffix:
+      match: bilibili.com
+      policy: DIRECT
+  - domain_suffix:
+      match: bilivideo.com
+      policy: DIRECT
+  - domain_suffix:
+      match: qq.com
+      policy: DIRECT
+  - domain_suffix:
+      match: weixin.qq.com
+      policy: DIRECT
+  - domain_suffix:
+      match: taobao.com
+      policy: DIRECT
+  - domain_suffix:
+      match: tmall.com
+      policy: DIRECT
+  - domain_suffix:
+      match: jd.com
+      policy: DIRECT
+  - domain_suffix:
+      match: alipay.com
+      policy: DIRECT
+
+  # 中国 IP 直连
+  - geoip:
+      match: CN
+      policy: DIRECT
+      no_resolve: true
+
+  # 兜底
+  - default:
+      policy: 漏网之鱼
