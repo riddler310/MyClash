@@ -1,10 +1,3 @@
-# 由 mihomo 覆写脚本(AIsouler/MyClash)转换而来的 Egern 配置
-# Egern Version ≥ v2.20.0
-# 官方文档: https://doc.egernapp.com
-#
-# 使用前: 把下面 policy_groups 里「手动选择」的 urls 换成你的机场订阅链接
-# 以 ; 或 # 或 // 开头的行为注释行
-# ================
 ipv6: false
 vif_only: true
 hijack_dns:
@@ -673,8 +666,9 @@ policy_groups:
     - 手动选择
     - DIRECT
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png
+# 地区组: 第一项是「X-自动选择」, 后面是订阅里按地区过滤出的节点 (urls 需与「手动选择」相同)
 - auto_test:
-    name: 香港
+    name: 香港-自动选择
     policies:
     - 手动选择
     flatten: true
@@ -682,9 +676,18 @@ policy_groups:
     interval: 600
     tolerance: 50
     timeout: 3
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+- select:
+    name: 香港
+    policies:
+    - 香港-自动选择
+    urls:
+    - http://your-service-provider
+    filter: '🇭🇰|香港|HK|[Hh]ong\s*[Kk]ong'
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
 - auto_test:
-    name: 日本
+    name: 日本-自动选择
     policies:
     - 手动选择
     flatten: true
@@ -692,9 +695,18 @@ policy_groups:
     interval: 600
     tolerance: 50
     timeout: 3
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+- select:
+    name: 日本
+    policies:
+    - 日本-自动选择
+    urls:
+    - http://your-service-provider
+    filter: '🇯🇵|日本|JP|[Jj]apan'
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
 - auto_test:
-    name: 美国
+    name: 美国-自动选择
     policies:
     - 手动选择
     flatten: true
@@ -702,9 +714,18 @@ policy_groups:
     interval: 600
     tolerance: 50
     timeout: 3
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+- select:
+    name: 美国
+    policies:
+    - 美国-自动选择
+    urls:
+    - http://your-service-provider
+    filter: '🇺🇸|美|夏威夷|弗尼基亚|ATT|MEGA|US|[Aa]merica|[Uu]nited\s*[Ss]tates'
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
 - auto_test:
-    name: 新加坡
+    name: 新加坡-自动选择
     policies:
     - 手动选择
     flatten: true
@@ -712,9 +733,18 @@ policy_groups:
     interval: 600
     tolerance: 50
     timeout: 3
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+- select:
+    name: 新加坡
+    policies:
+    - 新加坡-自动选择
+    urls:
+    - http://your-service-provider
+    filter: '🇸🇬|新加坡|狮城|SG|[Ss]ingapore'
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
 - auto_test:
-    name: 台湾省
+    name: 台湾省-自动选择
     policies:
     - 手动选择
     flatten: true
@@ -722,6 +752,15 @@ policy_groups:
     interval: 600
     tolerance: 50
     timeout: 3
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+- select:
+    name: 台湾省
+    policies:
+    - 台湾省-自动选择
+    urls:
+    - http://your-service-provider
+    filter: '🇹🇼|台湾|TW|[Tt]aiwan'
     icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
 rules:
 # 屏蔽哔哩哔哩 PCDN (mihomo hosts 里指向 0.0.0.0 的三个域名)
