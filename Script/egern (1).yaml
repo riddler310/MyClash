@@ -1,0 +1,904 @@
+# 由 mihomo 覆写脚本(AIsouler/MyClash)转换而来的 Egern 配置
+# Egern Version ≥ v2.20.0
+# 官方文档: https://doc.egernapp.com
+#
+# 使用前: 把下面 policy_groups 里「手动选择」的 urls 换成你的机场订阅链接
+# 以 ; 或 # 或 // 开头的行为注释行
+# ================
+ipv6: false
+vif_only: true
+hijack_dns:
+- '*:53'
+geoip_db_url: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-without-asn.mmdb
+proxy_latency_test_url: http://cp.cloudflare.com/generate_204
+direct_latency_test_url: http://cp.cloudflare.com/generate_204
+dns:
+  bootstrap:
+  - 223.5.5.5
+  - 119.29.29.29
+  upstreams:
+    Domestic-Encrypted-DNS:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+    Foreign-Encrypted-DNS:
+    - https://cloudflare-dns.com/dns-query
+    - https://dns.google/dns-query
+  forward:
+  - proxy_rule_set:
+      match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
+      value: Domestic-Encrypted-DNS
+  - domain_wildcard:
+      match: '*'
+      value: Foreign-Encrypted-DNS
+  hosts:
+    dns.alidns.com:
+    - 223.5.5.5
+    - 223.6.6.6
+    doh.pub:
+    - 1.12.12.12
+    - 120.53.53.53
+    cloudflare-dns.com:
+    - 1.1.1.1
+    - 1.0.0.1
+    dns.google:
+    - 8.8.8.8
+    - 8.8.4.4
+    services.googleapis.cn: services.googleapis.com
+  proxy_nameservers:
+  - https://dns.alidns.com/dns-query
+  - https://doh.pub/dns-query
+# 对应 mihomo 的 fake-ip-filter (private + fakeip-filter)
+real_ip_domains:
+- '*.lan'
+- '*.localdomain'
+- '*.example'
+- '*.invalid'
+- '*.localhost'
+- '*.test'
+- '*.local'
+- '*.home.arpa'
+- '*.direct'
+- 'time.*.com'
+- 'time.*.gov'
+- 'time.*.edu.cn'
+- 'time.*.apple.com'
+- 'time-ios.apple.com'
+- 'time1.*.com'
+- 'time2.*.com'
+- 'time3.*.com'
+- 'time4.*.com'
+- 'time5.*.com'
+- 'time6.*.com'
+- 'time7.*.com'
+- 'ntp.*.com'
+- 'ntp1.*.com'
+- 'ntp2.*.com'
+- 'ntp3.*.com'
+- 'ntp4.*.com'
+- 'ntp5.*.com'
+- 'ntp6.*.com'
+- 'ntp7.*.com'
+- '*.time.edu.cn'
+- '*.ntp.org.cn'
+- 'pool.ntp.org'
+- '*.pool.ntp.org'
+- 'time1.cloud.tencent.com'
+- 'music.163.com'
+- '*.music.163.com'
+- '*.126.net'
+- 'musicapi.taihe.com'
+- 'music.taihe.com'
+- 'songsearch.kugou.com'
+- 'trackercdn.kugou.com'
+- '*.kuwo.cn'
+- 'api-jooxtt.sanook.com'
+- 'api.joox.com'
+- 'joox.com'
+- 'y.qq.com'
+- '*.y.qq.com'
+- 'streamoc.music.tc.qq.com'
+- 'mobileoc.music.tc.qq.com'
+- 'isure.stream.qqmusic.qq.com'
+- 'dl.stream.qqmusic.qq.com'
+- 'aqqmusic.tc.qq.com'
+- 'amobile.music.tc.qq.com'
+- '*.xiami.com'
+- '*.music.migu.cn'
+- 'music.migu.cn'
+- 'msftconnecttest.com'
+- '*.msftconnecttest.com'
+- 'msftncsi.com'
+- '*.msftncsi.com'
+- 'localhost.ptlogin2.qq.com'
+- 'localhost.sec.qq.com'
+- 'localhost.*.weixin.qq.com'
+- 'kk-rays.com'
+- '*.kk-rays.com'
+- 'steamcontent.com'
+- '*.steamcontent.com'
+- 'srv.nintendo.net'
+- '*.srv.nintendo.net'
+- '*.n.n.srv.nintendo.net'
+- 'cdn.nintendo.net'
+- '*.cdn.nintendo.net'
+- 'xbox.*.*.microsoft.com'
+- '*.*.xboxlive.com'
+- 'xbox.*.microsoft.com'
+- 'xnotify.xboxlive.com'
+- 'battle.net'
+- '*.battle.net'
+- 'battlenet.com.cn'
+- '*.battlenet.com.cn'
+- 'wotgame.cn'
+- '*.wotgame.cn'
+- 'wggames.cn'
+- '*.wggames.cn'
+- 'wowsgame.cn'
+- '*.wowsgame.cn'
+- 'wargaming.net'
+- '*.wargaming.net'
+- 'proxy.golang.org'
+- 'stun.*.*'
+- '*.stun.*.*'
+- 'stun.*.*.*'
+- '*.stun.*.*.*'
+- 'stun.*.*.*.*'
+- '*.stun.*.*.*.*'
+- 'stun.*.*.*.*.*'
+- '*.stun.*.*.*.*.*'
+- 'heartbeat.belkin.com'
+- '*.linksys.com'
+- '*.linksyssmartwifi.com'
+- '*.router.asus.com'
+- 'mesu.apple.com'
+- 'swscan.apple.com'
+- 'swquery.apple.com'
+- 'swdownload.apple.com'
+- 'swcdn.apple.com'
+- 'swdist.apple.com'
+- 'lens.l.google.com'
+- 'na.b.g-tun.com'
+- '*.square-enix.com'
+- '*.finalfantasyxiv.com'
+- '*.ffxiv.com'
+- '*.ff14.sdo.com'
+- 'ff.dorado.sdo.com'
+- '*.mcdn.bilivideo.cn'
+- 'media.dssott.com'
+- '*.media.dssott.com'
+- 'shark007.net'
+- 'market.xiaomi.com'
+- '*.market.xiaomi.com'
+- 'cmbchina.com'
+- '*.cmbchina.com'
+- 'cmbimg.com'
+- '*.cmbimg.com'
+- 'adguardteam.github.io'
+- 'adrules.top'
+- 'anti-ad.net'
+- 'local.adguard.org'
+- 'static.adtidy.org'
+- 'sandai.net'
+- '*.sandai.net'
+- 'n0808.com'
+- '*.n0808.com'
+- '3gppnetwork.org'
+- '*.3gppnetwork.org'
+- 'uu.163.com'
+- '*.uu.163.com'
+- 'ps.res.netease.com'
+- 'pub.3gppnetwork.org'
+- '*.pub.3gppnetwork.org'
+- 'oray.com'
+- '*.oray.com'
+- 'orayimg.com'
+- '*.orayimg.com'
+- 'gcloudcs.com'
+- '*.gcloudcs.com'
+- 'gcloudsdk.com'
+- '*.gcloudsdk.com'
+- 'dynv6.net'
+- '*.dynv6.net'
+- 'instant.arubanetworks.com'
+- 'setmeup.arubanetworks.com'
+- 'asusrouter.com'
+- 'router.asus.com'
+- 'www.asusrouter.com'
+- 'oasisauth.h3c.com'
+- 'routerlogin.com'
+- 'www.routerlogin.com'
+- 'localhost.weixin.qq.com'
+- 'localhost.work.weixin.qq.com'
+- 'tplogin.cn'
+- 'miwifi.com'
+- 'www.miwifi.com'
+- 'internal'
+- '*.internal'
+- 'localdomain'
+- 'example'
+- 'invalid'
+- 'localhost'
+- 'test'
+- 'local'
+- 'lan'
+- 'router.ctc'
+- '*.router.ctc'
+- 'my.router'
+- '*.my.router'
+- 'home.arpa'
+- 'zte.home'
+- '*.zte.home'
+- 'tplinkwifi.net'
+- '*.tplinkwifi.net'
+- 'tendawifi.com'
+- '*.tendawifi.com'
+- 'plex.direct'
+- '*.plex.direct'
+- 'hiwifi.com'
+- '*.hiwifi.com'
+- 'phicomm.me'
+- '*.phicomm.me'
+- 'peiluyou.com'
+- '*.peiluyou.com'
+- 'ts.net'
+- '*.ts.net'
+- 'leike.cc'
+- '*.leike.cc'
+- '127.in-addr.arpa'
+- '*.127.in-addr.arpa'
+- '10.in-addr.arpa'
+- '*.10.in-addr.arpa'
+- '82.100.in-addr.arpa'
+- '*.82.100.in-addr.arpa'
+- '93.100.in-addr.arpa'
+- '*.93.100.in-addr.arpa'
+- '29.172.in-addr.arpa'
+- '*.29.172.in-addr.arpa'
+- '30.172.in-addr.arpa'
+- '*.30.172.in-addr.arpa'
+- '31.172.in-addr.arpa'
+- '*.31.172.in-addr.arpa'
+- '16.172.in-addr.arpa'
+- '*.16.172.in-addr.arpa'
+- '17.172.in-addr.arpa'
+- '*.17.172.in-addr.arpa'
+- '27.172.in-addr.arpa'
+- '*.27.172.in-addr.arpa'
+- '168.192.in-addr.arpa'
+- '*.168.192.in-addr.arpa'
+- '254.169.in-addr.arpa'
+- '*.254.169.in-addr.arpa'
+- '18.172.in-addr.arpa'
+- '*.18.172.in-addr.arpa'
+- '*.localhost.ptlogin2.qq.com'
+- '*.localhost.sec.qq.com'
+- '19.172.in-addr.arpa'
+- '*.19.172.in-addr.arpa'
+- '20.172.in-addr.arpa'
+- '*.20.172.in-addr.arpa'
+- '21.172.in-addr.arpa'
+- '*.21.172.in-addr.arpa'
+- '22.172.in-addr.arpa'
+- '*.22.172.in-addr.arpa'
+- 'd.f.ip6.arpa'
+- '*.d.f.ip6.arpa'
+- '64.100.in-addr.arpa'
+- '*.64.100.in-addr.arpa'
+- '65.100.in-addr.arpa'
+- '*.65.100.in-addr.arpa'
+- '66.100.in-addr.arpa'
+- '*.66.100.in-addr.arpa'
+- '67.100.in-addr.arpa'
+- '*.67.100.in-addr.arpa'
+- '68.100.in-addr.arpa'
+- '*.68.100.in-addr.arpa'
+- '69.100.in-addr.arpa'
+- '*.69.100.in-addr.arpa'
+- '70.100.in-addr.arpa'
+- '*.70.100.in-addr.arpa'
+- '71.100.in-addr.arpa'
+- '*.71.100.in-addr.arpa'
+- '72.100.in-addr.arpa'
+- '*.72.100.in-addr.arpa'
+- '73.100.in-addr.arpa'
+- '*.73.100.in-addr.arpa'
+- '74.100.in-addr.arpa'
+- '*.74.100.in-addr.arpa'
+- '75.100.in-addr.arpa'
+- '*.75.100.in-addr.arpa'
+- '76.100.in-addr.arpa'
+- '*.76.100.in-addr.arpa'
+- '77.100.in-addr.arpa'
+- '*.77.100.in-addr.arpa'
+- '78.100.in-addr.arpa'
+- '*.78.100.in-addr.arpa'
+- '79.100.in-addr.arpa'
+- '*.79.100.in-addr.arpa'
+- '80.100.in-addr.arpa'
+- '*.80.100.in-addr.arpa'
+- '81.100.in-addr.arpa'
+- '*.81.100.in-addr.arpa'
+- '26.172.in-addr.arpa'
+- '*.26.172.in-addr.arpa'
+- '83.100.in-addr.arpa'
+- '*.83.100.in-addr.arpa'
+- '84.100.in-addr.arpa'
+- '*.84.100.in-addr.arpa'
+- '85.100.in-addr.arpa'
+- '*.85.100.in-addr.arpa'
+- '86.100.in-addr.arpa'
+- '*.86.100.in-addr.arpa'
+- '87.100.in-addr.arpa'
+- '*.87.100.in-addr.arpa'
+- '88.100.in-addr.arpa'
+- '*.88.100.in-addr.arpa'
+- '89.100.in-addr.arpa'
+- '*.89.100.in-addr.arpa'
+- '90.100.in-addr.arpa'
+- '*.90.100.in-addr.arpa'
+- '91.100.in-addr.arpa'
+- '*.91.100.in-addr.arpa'
+- '92.100.in-addr.arpa'
+- '*.92.100.in-addr.arpa'
+- '28.172.in-addr.arpa'
+- '*.28.172.in-addr.arpa'
+- '94.100.in-addr.arpa'
+- '*.94.100.in-addr.arpa'
+- '95.100.in-addr.arpa'
+- '*.95.100.in-addr.arpa'
+- '96.100.in-addr.arpa'
+- '*.96.100.in-addr.arpa'
+- '97.100.in-addr.arpa'
+- '*.97.100.in-addr.arpa'
+- '98.100.in-addr.arpa'
+- '*.98.100.in-addr.arpa'
+- '99.100.in-addr.arpa'
+- '*.99.100.in-addr.arpa'
+- '100.100.in-addr.arpa'
+- '*.100.100.in-addr.arpa'
+- '101.100.in-addr.arpa'
+- '*.101.100.in-addr.arpa'
+- '102.100.in-addr.arpa'
+- '*.102.100.in-addr.arpa'
+- '103.100.in-addr.arpa'
+- '*.103.100.in-addr.arpa'
+- '104.100.in-addr.arpa'
+- '*.104.100.in-addr.arpa'
+- '105.100.in-addr.arpa'
+- '*.105.100.in-addr.arpa'
+- '106.100.in-addr.arpa'
+- '*.106.100.in-addr.arpa'
+- '107.100.in-addr.arpa'
+- '*.107.100.in-addr.arpa'
+- '108.100.in-addr.arpa'
+- '*.108.100.in-addr.arpa'
+- '109.100.in-addr.arpa'
+- '*.109.100.in-addr.arpa'
+- '110.100.in-addr.arpa'
+- '*.110.100.in-addr.arpa'
+- '111.100.in-addr.arpa'
+- '*.111.100.in-addr.arpa'
+- '112.100.in-addr.arpa'
+- '*.112.100.in-addr.arpa'
+- '113.100.in-addr.arpa'
+- '*.113.100.in-addr.arpa'
+- '114.100.in-addr.arpa'
+- '*.114.100.in-addr.arpa'
+- '115.100.in-addr.arpa'
+- '*.115.100.in-addr.arpa'
+- '116.100.in-addr.arpa'
+- '*.116.100.in-addr.arpa'
+- '117.100.in-addr.arpa'
+- '*.117.100.in-addr.arpa'
+- '118.100.in-addr.arpa'
+- '*.118.100.in-addr.arpa'
+- '119.100.in-addr.arpa'
+- '*.119.100.in-addr.arpa'
+- '120.100.in-addr.arpa'
+- '*.120.100.in-addr.arpa'
+- '121.100.in-addr.arpa'
+- '*.121.100.in-addr.arpa'
+- '122.100.in-addr.arpa'
+- '*.122.100.in-addr.arpa'
+- '123.100.in-addr.arpa'
+- '*.123.100.in-addr.arpa'
+- '124.100.in-addr.arpa'
+- '*.124.100.in-addr.arpa'
+- '125.100.in-addr.arpa'
+- '*.125.100.in-addr.arpa'
+- '126.100.in-addr.arpa'
+- '*.126.100.in-addr.arpa'
+- '127.100.in-addr.arpa'
+- '*.127.100.in-addr.arpa'
+- '25.172.in-addr.arpa'
+- '*.25.172.in-addr.arpa'
+- '24.172.in-addr.arpa'
+- '*.24.172.in-addr.arpa'
+- '23.172.in-addr.arpa'
+- '*.23.172.in-addr.arpa'
+- 'b.e.f.ip6.arpa'
+- '*.b.e.f.ip6.arpa'
+- 'a.e.f.ip6.arpa'
+- '*.a.e.f.ip6.arpa'
+- '9.e.f.ip6.arpa'
+- '*.9.e.f.ip6.arpa'
+- '8.e.f.ip6.arpa'
+- '*.8.e.f.ip6.arpa'
+- '113.0.203.in-addr.arpa'
+- '*.113.0.203.in-addr.arpa'
+- '100.51.198.in-addr.arpa'
+- '*.100.51.198.in-addr.arpa'
+- '2.0.192.in-addr.arpa'
+- '*.2.0.192.in-addr.arpa'
+- 'kis.v2.scr.kaspersky-labs.com'
+- '*.kis.v2.scr.kaspersky-labs.com'
+- '255.255.255.255.in-addr.arpa'
+- '*.255.255.255.255.in-addr.arpa'
+- '8.b.d.0.1.0.0.2.ip6.arpa'
+- '*.8.b.d.0.1.0.0.2.ip6.arpa'
+- '1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa'
+- '*.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa'
+policy_groups:
+# 节点来源: 把 urls 换成你的订阅链接
+- external:
+    name: 手动选择
+    type: select
+    urls:
+    - http://your-service-provider
+    # 机场的流量/到期等信息节点混进来时, 可启用下面的过滤(需要 Egern 的正则支持负向先行断言)
+    # filter: '(?i)^(?!.*(群|❌|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|选择|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|⚠️|@|expire|http|com|traffic)).*$'
+    hidden: false
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
+- select:
+    name: 默认代理
+    policies:
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
+- auto_test:
+    name: 自动选择
+    policies:
+    - 手动选择
+    flatten: true
+    interval: 600
+    tolerance: 50
+    timeout: 3
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+- load_balance:
+    name: 负载均衡
+    policies:
+    - 手动选择
+    flatten: true
+    algorithm: hash
+    hidden: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Round_Robin.png
+- select:
+    name: AI
+    policies:
+    - 美国
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png
+- select:
+    name: Media
+    policies:
+    - 日本
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 美国
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
+- select:
+    name: Instagram
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Instagram.png
+- select:
+    name: FCM
+    policies:
+    - DIRECT
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png
+- select:
+    name: Google
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png
+- select:
+    name: Microsoft
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
+- select:
+    name: Apple
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png
+- select:
+    name: Telegram
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+- select:
+    name: NS
+    policies:
+    - 手动选择
+    flatten: true
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png
+- select:
+    name: Steam
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
+- select:
+    name: TikTok
+    policies:
+    - 日本
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 美国
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png
+- select:
+    name: Twitter
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png
+- select:
+    name: Emby
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png
+- select:
+    name: Spotify
+    policies:
+    - 默认代理
+    - 手动选择
+    - 自动选择
+    - 负载均衡
+    - 香港
+    - 日本
+    - 美国
+    - 新加坡
+    - 台湾省
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
+- select:
+    name: AdBlock
+    policies:
+    - REJECT
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Advertising.png
+- select:
+    name: 漏网之鱼
+    policies:
+    - 默认代理
+    - 手动选择
+    - DIRECT
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png
+- auto_test:
+    name: 香港
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇭🇰|香港|HK|[Hh]ong\s*[Kk]ong'
+    interval: 600
+    tolerance: 50
+    timeout: 3
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
+- auto_test:
+    name: 日本
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇯🇵|日本|JP|[Jj]apan'
+    interval: 600
+    tolerance: 50
+    timeout: 3
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+- auto_test:
+    name: 美国
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇺🇸|美|夏威夷|弗尼基亚|ATT|MEGA|US|[Aa]merica|[Uu]nited\s*[Ss]tates'
+    interval: 600
+    tolerance: 50
+    timeout: 3
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+- auto_test:
+    name: 新加坡
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇸🇬|新加坡|狮城|SG|[Ss]ingapore'
+    interval: 600
+    tolerance: 50
+    timeout: 3
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+- auto_test:
+    name: 台湾省
+    policies:
+    - 手动选择
+    flatten: true
+    filter: '🇹🇼|台湾|TW|[Tt]aiwan'
+    interval: 600
+    tolerance: 50
+    timeout: 3
+    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+rules:
+# 屏蔽哔哩哔哩 PCDN (mihomo hosts 里指向 0.0.0.0 的三个域名)
+- domain_suffix:
+    match: mcdn.bilivideo.com
+    policy: REJECT
+- domain_suffix:
+    match: mcdn.bilivideo.cn
+    policy: REJECT
+- domain_suffix:
+    match: edge.mountaintoys.cn
+    policy: REJECT
+# GitHub 走默认代理
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/github.list
+    policy: 默认代理
+# 禁用国外 QUIC (UDP 443), 国内域名/IP 除外
+- and:
+    name: Block Foreign QUIC
+    match:
+    - protocol:
+        match: udp
+    - dest_port:
+        match: '443'
+    - not:
+        match:
+          or:
+            match:
+            - rule_set:
+                match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
+            - geoip:
+                match: CN
+                no_resolve: true
+    policy: REJECT
+# 私有网络直连
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/private.list
+    policy: DIRECT
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/private.list
+    policy: DIRECT
+    no_resolve: true
+# 国内直连
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/category-games@cn.list
+    policy: DIRECT
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/epicgames.list
+    policy: DIRECT
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/nvidia@cn.list
+    policy: DIRECT
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/apple@cn.list
+    policy: DIRECT
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/microsoft@cn.list
+    policy: DIRECT
+- domain:
+    match: fsend.cn
+    policy: DIRECT
+- domain:
+    match: international-gfe.download.nvidia.com
+    policy: DIRECT
+# 分流
+# AI
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/category-ai-!cn.list
+    policy: AI
+# Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/youtube.list
+    policy: Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/netflix.list
+    policy: Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/netflix.list
+    policy: Media
+    no_resolve: true
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/hbo.list
+    policy: Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/twitch.list
+    policy: Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/disney.list
+    policy: Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/niconico.list
+    policy: Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/bbc.list
+    policy: Media
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/pornhub.list
+    policy: Media
+# Instagram
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/instagram.list
+    policy: Instagram
+# FCM
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/googlefcm.list
+    policy: FCM
+# Google
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/google.list
+    policy: Google
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/google.list
+    policy: Google
+    no_resolve: true
+# Microsoft
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/microsoft.list
+    policy: Microsoft
+# Apple
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/apple.list
+    policy: Apple
+# Telegram
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/telegram.list
+    policy: Telegram
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/telegram.list
+    policy: Telegram
+    no_resolve: true
+# NS
+- domain_suffix:
+    match: nodeseek.com
+    policy: NS
+# Steam
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/steam.list
+    policy: Steam
+# TikTok
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/tiktok.list
+    policy: TikTok
+# Twitter
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/twitter.list
+    policy: Twitter
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/twitter.list
+    policy: Twitter
+    no_resolve: true
+# Emby
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Emby.yaml
+    policy: Emby
+- domain_suffix:
+    match: mb3admin.com
+    policy: Emby
+- domain_keyword:
+    match: emby
+    policy: Emby
+# Spotify
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/spotify.list
+    policy: Spotify
+# AdBlock
+- rule_set:
+    match: https://raw.githubusercontent.com/217heidai/adblockfilters/main/rules/adblocksurgelite.list
+    policy: AdBlock
+# 兜底
+- rule_set:
+    match: https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/classical/gfw.list
+    policy: 默认代理
+- rule_set:
+    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
+    policy: DIRECT
+- geoip:
+    match: CN
+    policy: DIRECT
+- default:
+    policy: 漏网之鱼
