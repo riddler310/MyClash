@@ -1,0 +1,249 @@
+# Loon 适配配置（由 Mihomo 覆写脚本转换）
+# 生成日期：2026-10-20
+# 说明：本文件使用 Loon 原生配置语法，不包含 Mihomo 的 YAML / MRS / proxy-providers 字段。
+# 节点订阅 URL 未出现在原始脚本中，因此 [Remote Proxy] 保留为空；请在 Loon 内添加你的机场订阅。
+# 连接 PHICOMM_5G 时，各服务场景组切换到 DIRECT，由透明代理路由器负责代理。
+
+[General]
+ip-mode=ipv4-only
+ipv6-vif=off
+dns-server=system
+sni-sniffing=true
+disable-stun=true
+dns-reject-mode=LoopbackIP
+domain-reject-mode=DNS
+udp-fallback-mode=REJECT
+wifi-access-http-port=7222
+wifi-access-socks5-port=7221
+allow-wifi-access=false
+interface-mode=Auto
+test-timeout=5
+disconnect-on-policy-change=false
+internet-test-url=http://connectivitycheck.platform.hicloud.com/generate_204
+proxy-test-url=http://cp.cloudflare.com/generate_204
+resource-parser=https://raw.githubusercontent.com/sub-store-org/Sub-Store/release/sub-store-parser.loon.min.js
+geoip-url=https://geodata.kelee.one/Country-Masaiki.mmdb
+ipasn-url=https://geodata.kelee.one/GeoLite2-ASN-P3TERX.mmdb
+skip-proxy=192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, localhost, *.local, e.crashlynatics.com
+bypass-tun=10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12, 192.0.0.0/24, 192.0.2.0/24, 192.168.0.0/16, 198.51.100.0/24, 203.0.113.0/24, 224.0.0.0/4, 255.255.255.255/32
+
+[Proxy]
+
+[Remote Proxy]
+# 未提供订阅 URL，不在这里伪造地址。
+# 可在 Loon「节点订阅」中添加，也可按 Loon 格式写在本段：订阅名称 = https://你的订阅地址
+
+[Remote Filter]
+# 地区筛选：过滤回国、校园、游戏等不属于普通地区节点的节点名。
+香港节点=NameRegex, FilterKey="^(?=.*((?i)🇭🇰|香港|(\b(HK|HKG|Hong)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
+台湾节点=NameRegex, FilterKey="^(?=.*((?i)🇹🇼|台湾|(\b(TW|TWN|Tai|Taiwan)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
+日本节点=NameRegex, FilterKey="^(?=.*((?i)🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|JPN|Japan)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
+新加坡节点=NameRegex, FilterKey="^(?=.*((?i)🇸🇬|新加坡|狮城|(\b(SG|SGP|Singapore)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
+美国节点=NameRegex, FilterKey="^(?=.*((?i)🇺🇸|美国|美西|美东|美中|美南|美北|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(\b(US|USA|United States)(\d+)?\b)))(?!.*((?i)回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
+全球节点=NameRegex, FilterKey="^(?=.*(.))(?!.*((?i)群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|好友|失联|http|\.com|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)(\d+)?\b|(\d{4}-\d{2}-\d{2}|\dG)))).*$"
+
+[Proxy Group]
+# ------------------------------
+# 全局策略
+手动选择=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png
+自动选择=url-test, 全球节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
+默认代理=select, 自动选择, 手动选择, 香港自动场景, 日本自动场景, 美国自动场景, 新加坡自动场景, 台湾自动场景, 香港手动场景, 日本手动场景, 美国手动场景, 新加坡手动场景, 台湾手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+直连=select, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China_Map.png
+
+# ------------------------------
+# 地区手动 / 自动策略
+香港手动策略=select, 香港节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾手动策略=select, 台湾节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本手动策略=select, 日本节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+新加坡手动策略=select, 新加坡节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国手动策略=select, 美国节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+
+香港自动策略=url-test, 香港节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾自动策略=url-test, 台湾节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本自动策略=url-test, 日本节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+新加坡自动策略=url-test, 新加坡节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国自动策略=url-test, 美国节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+
+# ------------------------------
+# SSID 场景：PHICOMM_5G 直连给透明代理路由器处理
+香港手动场景=ssid, default=香港手动策略, cellular=香港手动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾手动场景=ssid, default=台湾手动策略, cellular=台湾手动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本手动场景=ssid, default=日本手动策略, cellular=日本手动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+新加坡手动场景=ssid, default=新加坡手动策略, cellular=新加坡手动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国手动场景=ssid, default=美国手动策略, cellular=美国手动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+香港自动场景=ssid, default=香港自动策略, cellular=香港自动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾自动场景=ssid, default=台湾自动策略, cellular=台湾自动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本自动场景=ssid, default=日本自动策略, cellular=日本自动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+新加坡自动场景=ssid, default=新加坡自动策略, cellular=新加坡自动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国自动场景=ssid, default=美国自动策略, cellular=美国自动策略, "PHICOMM_5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+
+# ------------------------------
+# 服务分流组（默认选项按源脚本意图设置）
+# 各组首个候选项即默认选择；服务直连选项仅按源脚本 direct=true 的组保留。
+AI=select, 美国自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
+Media=select, 香港自动场景, 默认代理, 手动选择, 自动选择, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
+Meta=select, 台湾自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
+FCM=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/MiToverG422/Qure/master/IconSet/Color/fcm.png
+Google=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+Microsoft=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
+Apple=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
+Telegram=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+NS=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
+Steam=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
+TikTok=select, 日本自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+Twitter=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
+Emby=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
+Spotify=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
+Speedtest Intl=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png
+# ------------------------------
+# 汇总 / 兜底策略
+GLOBAL=select, 默认代理, 手动选择, 自动选择, AI, Media, Meta, FCM, Google, Microsoft, Apple, Telegram, NS, Steam, TikTok, Twitter, Emby, Spotify, Speedtest Intl, 香港自动场景, 台湾自动场景, 日本自动场景, 新加坡自动场景, 美国自动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Global.png
+漏网之鱼=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 台湾自动场景, 日本自动场景, 新加坡自动场景, 美国自动场景, 香港手动场景, 台湾手动场景, 日本手动场景, 新加坡手动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png
+
+[Rule]
+# 1. 本地设备访问飞牛 NAS 时，按目标地址直连。
+# 原 Mihomo 的 SRC-IP-CIDR,192.168.5.5/32 是匹配“来源地址”，不能等价照搬到 iOS Loon；此处按手机访问 NAS 的用途改为目标 IP 直连。
+IP-CIDR,192.168.5.5/32,DIRECT,no-resolve
+
+# 2. 局域网和保留地址直连
+IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
+IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
+IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+IP-CIDR6,fc00::/7,DIRECT,no-resolve
+
+# 3. 国内服务直连例外（对应源脚本中的少量显式直连规则）
+DOMAIN,fsend.cn,DIRECT
+DOMAIN,international-gfe.download.nvidia.com,DIRECT
+DOMAIN-SUFFIX,epicgames.com,DIRECT
+DOMAIN-SUFFIX,nvidia.cn,DIRECT
+DOMAIN-SUFFIX,apple.cn,DIRECT
+DOMAIN-SUFFIX,apple.com.cn,DIRECT
+DOMAIN-SUFFIX,microsoft.cn,DIRECT
+DOMAIN-SUFFIX,microsoft.com.cn,DIRECT
+
+# 4. Loon 原生协议规则：尽量复刻源脚本“非中国流量阻止 QUIC”的意图。
+# 这是按 GEOIP,CN 近似排除中国 IP；不再引用 Mihomo 专用的 MRS 规则集。
+AND,((PROTOCOL,QUIC),(NOT,((GEOIP,CN)))),REJECT
+
+# 5. 优先修正 Claude / Grok 路由，避免被 Anthropic / X(Twitter) 规则抢先匹配。
+DOMAIN-SUFFIX,claude.ai,AI
+DOMAIN-SUFFIX,claude.com,AI
+DOMAIN-SUFFIX,anthropic.com,AI
+DOMAIN-SUFFIX,grok.com,AI
+DOMAIN-SUFFIX,grok.x.com,AI
+DOMAIN-SUFFIX,x.ai,AI
+
+# 6. NodeSeek（源脚本中的 NS 策略）
+DOMAIN-SUFFIX,nodeseek.com,NS
+DOMAIN-SUFFIX,nodeseek.org,NS
+DOMAIN-SUFFIX,seek.li,NS
+DOMAIN-SUFFIX,nodeimage.com,NS
+
+# 7. Emby 辅助规则（源脚本中的显式规则）
+DOMAIN-SUFFIX,mb3admin.com,Emby
+DOMAIN-KEYWORD,emby,Emby
+
+# 8. Meta 全系显式域名补充
+DOMAIN-SUFFIX,facebook.com,Meta
+DOMAIN-SUFFIX,fb.com,Meta
+DOMAIN-SUFFIX,fbcdn.net,Meta
+DOMAIN-SUFFIX,fbsbx.com,Meta
+DOMAIN-SUFFIX,messenger.com,Meta
+DOMAIN-SUFFIX,instagram.com,Meta
+DOMAIN-SUFFIX,cdninstagram.com,Meta
+DOMAIN-SUFFIX,whatsapp.com,Meta
+DOMAIN-SUFFIX,whatsapp.net,Meta
+DOMAIN-SUFFIX,threads.net,Meta
+DOMAIN-SUFFIX,threads.com,Meta
+DOMAIN-SUFFIX,meta.com,Meta
+DOMAIN-SUFFIX,meta.ai,Meta
+
+FINAL,漏网之鱼
+
+[Remote Rule]
+# 私网 / 广告 / GitHub 优先规则
+https://kelee.one/Tool/Loon/Lsr/LAN_SPLITTER.lsr, policy=DIRECT, tag=LAN, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Advertising/Advertising_Domain.list, policy=REJECT, tag=AdBlock, enabled=true
+https://rule.kelee.one/Loon/GitHub.lsr, policy=默认代理, tag=GitHub, enabled=true
+
+# AI（保留可莉 AI 规则，并在本地规则中明确 Claude / Grok）
+https://kelee.one/Tool/Loon/Lsr/AI.lsr, policy=AI, tag=AI, enabled=true
+
+# Media：统一进入 Media 策略组
+https://rule.kelee.one/Loon/YouTube.lsr, policy=Media, tag=YouTube, enabled=true
+https://rule.kelee.one/Loon/Netflix.lsr, policy=Media, tag=Netflix, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/HBO/HBO.list, policy=Media, tag=HBO, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Twitch/Twitch.list, policy=Media, tag=Twitch, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Disney/Disney.list, policy=Media, tag=Disney, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Niconico/Niconico.list, policy=Media, tag=Niconico, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/BBC/BBC.list, policy=Media, tag=BBC, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Pornhub/Pornhub.list, policy=Media, tag=Pornhub, enabled=true
+
+# Meta：Facebook / Instagram / WhatsApp / Threads / Meta
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Facebook/Facebook.list, policy=Meta, tag=Facebook, enabled=true
+https://rule.kelee.one/Loon/Instagram.lsr, policy=Meta, tag=Instagram, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/WhatsApp/WhatsApp.list, policy=Meta, tag=WhatsApp, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Threads/Threads.list, policy=Meta, tag=Threads, enabled=true
+
+# 国内游戏规则（尽量覆盖源脚本 category-games@cn 的常见 Loon 对应规则）
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/SteamCN/SteamCN.list, policy=DIRECT, tag=Steam CN, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Epic/Epic.list, policy=DIRECT, tag=Epic Games, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/GameDownloadCN/GameDownloadCN.list, policy=DIRECT, tag=Game Download CN, enabled=true
+
+# Google 服务与 FCM；FCM 默认直连
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/GoogleFCM/GoogleFCM.list, policy=FCM, tag=Google FCM, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Google/Google.list, policy=Google, tag=Google, enabled=true
+
+# Microsoft / Apple / Telegram / Steam
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Microsoft/Microsoft.list, policy=Microsoft, tag=Microsoft, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Apple/Apple.list, policy=Apple, tag=Apple, enabled=true
+https://rule.kelee.one/Loon/Telegram.lsr, policy=Telegram, tag=Telegram, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Steam/Steam.list, policy=Steam, tag=Steam, enabled=true
+
+# TikTok / Twitter(X) / Emby / Spotify
+https://kelee.one/Tool/Loon/Lsr/TikTok.lsr, policy=TikTok, tag=TikTok, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Twitter/Twitter.list, policy=Twitter, tag=Twitter, enabled=true
+https://rule.kelee.one/Loon/Emby.lsr, policy=Emby, tag=Emby, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Spotify/Spotify.list, policy=Spotify, tag=Spotify, enabled=true
+
+# Speedtest 国际测速
+https://kelee.one/Tool/Loon/Lsr/SpeedtestInternational.lsr, policy=Speedtest Intl, tag=Speedtest Intl, enabled=true
+
+# GFW / 海外通用规则：放在专用服务规则之后，匹配其他常见海外域名
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Global/Global.list, policy=默认代理, tag=GFW, enabled=true
+
+# 中国大陆区域规则最后加载，尽量避免覆盖前面的服务分流
+https://kelee.one/Tool/Loon/Lsr/REGION_SPLITTER.lsr, policy=DIRECT, tag=CN REGION, enabled=true
+
+[Host]
+ssid:PHICOMM_5G = server:10.0.0.1
+# Google Play 域名映射（保留源脚本意图）
+services.googleapis.cn = services.googleapis.com
+# 阻止部分 B 站 PCDN 域名解析
+*.mcdn.bilivideo.com = 0.0.0.0
+*.mcdn.bilivideo.cn = 0.0.0.0
+*.edge.mountaintoys.cn = 0.0.0.0
+
+[Rewrite]
+
+[Script]
+
+[Plugin]
+https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx, pin=true, enabled=true
+https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx, pin=true, enabled=true
+https://kelee.one/Tool/Loon/Lpx/QuickSearch.lpx, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Prevent_DNS_Leaks.lpx, policy=漏网之鱼, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Node_detection_tool.lpx, enabled=true
+https://kelee.one/Tool/Loon/Lpx/TestFlightRegionUnlock.lpx, policy=DIRECT, enabled=false
+https://kelee.one/Tool/Loon/Lpx/BoxJs.lpx, policy=漏网之鱼, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Sub-Store.lpx, policy=漏网之鱼, enabled=true
+https://kelee.one/Tool/Loon/Lpx/Script-Hub.lpx, policy=漏网之鱼, enabled=true
+
+[Mitm]
+hostname=
+ca-p12=
+ca-passphrase=
+skip-server-cert-verify=false
