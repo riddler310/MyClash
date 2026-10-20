@@ -258,6 +258,8 @@ https://kelee.one/Tool/Loon/Lpx/Block_HTTPDNS.lpx, pin=true, enabled=true
 https://kelee.one/Tool/Loon/Lpx/BlockAdvertisers.lpx, pin=true, enabled=true
 
 # Apple / 链接解锁
+# Google 搜索重定向：将 Google 搜索重定向到 .com；如出现频繁跳转，可禁用此插件。
+https://kelee.one/Tool/Loon/Lpx/Google.lpx, enabled=true
 https://kelee.one/Tool/Loon/Lpx/AppleWeatherEnhancer.lpx, enabled=true
 https://kelee.one/Tool/Loon/Lpx/QQ_Redirect.lpx, enabled=true
 https://kelee.one/Tool/Loon/Lpx/Weixin_external_links_unlock.lpx, enabled=true
