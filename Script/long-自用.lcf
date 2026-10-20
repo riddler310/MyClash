@@ -9,7 +9,8 @@
 [General]
 ip-mode=ipv4-only
 ipv6-vif=off
-dns-server=system
+# 常规 Wi-Fi / 蜂窝网络使用加密 DoH；不把 system 明文 DNS 配成常规解析器
+doh-server=https://dns.cloudflare.com/dns-query,https://dns.google/dns-query
 sni-sniffing=true
 disable-stun=true
 dns-reject-mode=LoopbackIP
@@ -240,6 +241,10 @@ https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/
 https://kelee.one/Tool/Loon/Lsr/REGION_SPLITTER.lsr, policy=DIRECT, tag=CN REGION, enabled=true
 
 [Host]
+# DoH 服务端点固定映射，避免先用普通 DNS 解析 DoH 主机名
+dns.cloudflare.com = 1.1.1.1
+dns.google = 8.8.8.8
+# ZTE-5G 下使用 OpenWrt 主路由 DNS
 ssid:ZTE-5G = server:192.168.5.1
 # Google Play 域名映射（保留源脚本意图）
 services.googleapis.cn = services.googleapis.com
