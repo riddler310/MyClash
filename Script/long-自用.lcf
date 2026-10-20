@@ -50,7 +50,7 @@ bypass-tun=10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12
 # 全局策略
 手动选择=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png
 自动选择=url-test, 全球节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
-默认代理-常规策略=select, 自动选择, 手动选择, 香港自动场景, 日本自动场景, 美国自动场景, 新加坡自动场景, 台湾自动场景, 香港手动场景, 日本手动场景, 美国手动场景, 新加坡手动场景, 台湾手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+默认代理-常规策略=select, 香港手动策略, 自动选择, 手动选择, 香港自动场景, 日本自动场景, 美国自动场景, 新加坡自动场景, 台湾自动场景, 香港手动场景, 日本手动场景, 美国手动场景, 新加坡手动场景, 台湾手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
 默认代理=ssid, default=默认代理-常规策略, cellular=默认代理-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
 直连=select, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/China_Map.png
 
@@ -84,33 +84,33 @@ bypass-tun=10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12
 # ------------------------------
 # 服务分流组（默认选项按源脚本意图设置）
 # 各组首个候选项即默认选择；服务直连选项仅按源脚本 direct=true 的组保留。
-AI-常规策略=select, 美国自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
+AI-常规策略=select, 台湾手动策略, 美国自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
 AI=ssid, default=AI-常规策略, cellular=AI-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
-Media-常规策略=select, 香港自动场景, 默认代理, 手动选择, 自动选择, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
+Media-常规策略=select, 香港自动策略, 香港自动场景, 默认代理, 手动选择, 自动选择, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
 Media=ssid, default=Media-常规策略, cellular=Media-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
-Meta-常规策略=select, 台湾自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
+Meta-常规策略=select, 台湾手动策略, 台湾自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
 Meta=ssid, default=Meta-常规策略, cellular=Meta-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
 FCM-常规策略=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/MiToverG422/Qure/master/IconSet/Color/fcm.png
 FCM=ssid, default=FCM-常规策略, cellular=FCM-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/MiToverG422/Qure/master/IconSet/Color/fcm.png
-Google-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+Google-常规策略=select, 台湾手动策略, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
 Google=ssid, default=Google-常规策略, cellular=Google-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
 Microsoft-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
 Microsoft=ssid, default=Microsoft-常规策略, cellular=Microsoft-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
 Apple-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
 Apple=ssid, default=Apple-常规策略, cellular=Apple-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
-Telegram-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+Telegram-常规策略=select, 新加坡自动策略, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
 Telegram=ssid, default=Telegram-常规策略, cellular=Telegram-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
 NS-常规策略=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
 NS=ssid, default=NS-常规策略, cellular=NS-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
 Steam-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
 Steam=ssid, default=Steam-常规策略, cellular=Steam-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
-TikTok-常规策略=select, 日本自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+TikTok-常规策略=select, 台湾手动策略, 日本自动场景, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
 TikTok=ssid, default=TikTok-常规策略, cellular=TikTok-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
 Twitter-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
 Twitter=ssid, default=Twitter-常规策略, cellular=Twitter-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
 Emby-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
 Emby=ssid, default=Emby-常规策略, cellular=Emby-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
-Spotify-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
+Spotify-常规策略=select, 台湾手动策略, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
 Spotify=ssid, default=Spotify-常规策略, cellular=Spotify-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
 Speedtest Intl-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动场景, 香港手动场景, 台湾自动场景, 台湾手动场景, 日本自动场景, 日本手动场景, 新加坡自动场景, 新加坡手动场景, 美国自动场景, 美国手动场景, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png
 Speedtest Intl=ssid, default=Speedtest Intl-常规策略, cellular=Speedtest Intl-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png
