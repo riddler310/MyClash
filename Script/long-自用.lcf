@@ -1,14 +1,14 @@
 # Loon 配置（由 Mihomo 覆写脚本转换 · 审计优化版）
 # 说明：本文件使用 Loon 原生配置语法。
 # [Remote Proxy] 保留为空；请在 Loon 内添加你的机场订阅。
-# SSID 设计：所有被规则 / 插件直接引用的策略组都由 SSID 组包裹：
-#   连接 ZTE-5G 时选择 DIRECT，交给 OpenWrt 旁路由处理；其他 Wi-Fi / 蜂窝网络使用「XX-常规策略」。
-#   「XX-常规策略」只在非 ZTE-5G 下生效，因此其内部直接引用地区策略即可，无需再套一层 SSID。
-# 注意：REJECT 规则 / 插件（广告拦截、QUIC 拦截）不是策略组，不受 SSID 选择器影响。
+# SSID 设计：使用 [General] 原生 ssid-trigger，连接 ZTE-5G 时自动切换为全局直连（交给 OpenWrt 软路由处理），
+#   蜂窝网络与其他 Wi-Fi 自动使用规则分流，无需再用「XX-常规策略」套娃包裹策略组。
 
 [General]
 ip-mode=ipv4-only
 ipv6-vif=off
+# 连接家庭 Wi-Fi（ZTE-5G）自动切换为直连模式，离开后自动恢复规则分流
+ssid-trigger="ZTE-5G":direct,"cellular":rule,"default":rule
 # 国内加密 DoH：国内 CDN 解析准确（直连 / GEOIP 判断都依赖它），且在大陆可稳定连接。
 # 走代理的域名由节点远端解析，不受此处影响。
 doh-server=https://dns.alidns.com/dns-query,https://doh.pub/dns-query
@@ -52,64 +52,51 @@ bypass-tun=10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192
 
 [Proxy Group]
 # ------------------------------
-# 全局策略
-手动选择=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png
+# 1. 全局与总入口策略
+默认代理=select, 香港, 自动选择, 手动选择, 日本, 美国, 新加坡, 台湾, 香港自动, 日本自动, 美国自动, 新加坡自动, 台湾自动, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
 自动选择=url-test, 全球节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
-默认代理-常规策略=select, 香港手动策略, 自动选择, 手动选择, 香港自动策略, 日本自动策略, 美国自动策略, 新加坡自动策略, 台湾自动策略, 日本手动策略, 美国手动策略, 新加坡手动策略, 台湾手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
-默认代理=ssid, default=默认代理-常规策略, cellular=默认代理-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
+手动选择=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png
 
 # ------------------------------
-# 地区手动 / 自动策略
-香港手动策略=select, 香港节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-台湾手动策略=select, 台湾节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
-日本手动策略=select, 日本节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
-新加坡手动策略=select, 新加坡节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
-美国手动策略=select, 美国节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
-
-香港自动策略=url-test, 香港节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-台湾自动策略=url-test, 台湾节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
-日本自动策略=url-test, 日本节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
-新加坡自动策略=url-test, 新加坡节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
-美国自动策略=url-test, 美国节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+# 2. 地区组（首项为该地区自动测速，也可直接手选单节点）
+香港=select, 香港自动, 香港节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾=select, 台湾自动, 台湾节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本=select, 日本自动, 日本节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+新加坡=select, 新加坡自动, 新加坡节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国=select, 美国自动, 美国节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
 
 # ------------------------------
-# 服务分流组：各组首个候选项即默认选择
-AI-常规策略=select, 台湾手动策略, 美国自动策略, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
-AI=ssid, default=AI-常规策略, cellular=AI-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
-Media-常规策略=select, 香港自动策略, 默认代理, 手动选择, 自动选择, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
-Media=ssid, default=Media-常规策略, cellular=Media-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
-Meta-常规策略=select, 台湾手动策略, 台湾自动策略, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
-Meta=ssid, default=Meta-常规策略, cellular=Meta-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
-FCM-常规策略=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/MiToverG422/Qure/master/IconSet/Color/fcm.png
-FCM=ssid, default=FCM-常规策略, cellular=FCM-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/MiToverG422/Qure/master/IconSet/Color/fcm.png
-Google-常规策略=select, 台湾手动策略, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
-Google=ssid, default=Google-常规策略, cellular=Google-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
-Microsoft-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
-Microsoft=ssid, default=Microsoft-常规策略, cellular=Microsoft-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
+# 3. 服务分流组（各组首个候选项即默认选择）
+AI=select, 美国, 台湾, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
+# Bybit / 币安对美国、新加坡、香港有限制，默认优先走台湾
+Crypto=select, 台湾, 日本, 默认代理, 手动选择, 自动选择, 香港, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Cryptocurrency.png
+Media=select, 香港, 默认代理, 手动选择, 自动选择, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
+Meta=select, 台湾, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
+FCM=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/MiToverG422/Qure/master/IconSet/Color/fcm.png
+Google=select, 台湾, 美国, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
+Microsoft=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
 # Apple 默认直连：Apple.list 含 17.0.0.0/8 与 App Store / iCloud / 推送等系统流量，走代理既耗流量又容易出问题
-Apple-常规策略=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
-Apple=ssid, default=Apple-常规策略, cellular=Apple-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
-Telegram-常规策略=select, 新加坡自动策略, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
-Telegram=ssid, default=Telegram-常规策略, cellular=Telegram-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
-NS-常规策略=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
-NS=ssid, default=NS-常规策略, cellular=NS-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
-Steam-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
-Steam=ssid, default=Steam-常规策略, cellular=Steam-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
-TikTok-常规策略=select, 台湾手动策略, 日本自动策略, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
-TikTok=ssid, default=TikTok-常规策略, cellular=TikTok-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
-Twitter-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
-Twitter=ssid, default=Twitter-常规策略, cellular=Twitter-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
-Emby-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
-Emby=ssid, default=Emby-常规策略, cellular=Emby-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
-Spotify-常规策略=select, 台湾手动策略, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
-Spotify=ssid, default=Spotify-常规策略, cellular=Spotify-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
-Speedtest Intl-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动策略, 香港手动策略, 台湾自动策略, 台湾手动策略, 日本自动策略, 日本手动策略, 新加坡自动策略, 新加坡手动策略, 美国自动策略, 美国手动策略, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png
-Speedtest Intl=ssid, default=Speedtest Intl-常规策略, cellular=Speedtest Intl-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png
+Apple=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
+Telegram=select, 新加坡, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
+NS=select, 全球节点, 默认代理, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
+Steam=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
+TikTok=select, 台湾, 日本, 默认代理, 手动选择, 自动选择, 香港, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
+Twitter=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
+Emby=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
+Spotify=select, 台湾, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
+Speedtest Intl=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png
 
 # ------------------------------
-# 兜底策略
-漏网之鱼-常规策略=select, 默认代理, 手动选择, 自动选择, 香港自动策略, 台湾自动策略, 日本自动策略, 新加坡自动策略, 美国自动策略, 香港手动策略, 台湾手动策略, 日本手动策略, 新加坡手动策略, 美国手动策略, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png
-漏网之鱼=ssid, default=漏网之鱼-常规策略, cellular=漏网之鱼-常规策略, "ZTE-5G"=DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png
+# 4. 兜底策略
+漏网之鱼=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png
+
+# ------------------------------
+# 5. 各地区自动测速组（置于末尾，保持界面整洁）
+香港自动=url-test, 香港节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
+台湾自动=url-test, 台湾节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
+日本自动=url-test, 日本节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
+新加坡自动=url-test, 新加坡节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
+美国自动=url-test, 美国节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
 
 [Rule]
 # 1. 局域网和保留地址直连（IP 直连请求；局域网域名由 LAN_SPLITTER 处理）
@@ -148,12 +135,96 @@ DOMAIN-SUFFIX,nodeseek.com,NS
 DOMAIN-SUFFIX,nodeseek.org,NS
 DOMAIN-SUFFIX,seek.li,NS
 DOMAIN-SUFFIX,nodeimage.com,NS
+DOMAIN-SUFFIX,nodequality.com,NS
 
-# 6. Emby 辅助规则
+# 6. 金融与加密货币补充规则（Bybit / 币安 / OKX / Bitget / TradingView / 海外港美股券商与支付）
+DOMAIN-SUFFIX,bybit.com,Crypto
+DOMAIN-SUFFIX,bycsi.com,Crypto
+DOMAIN-SUFFIX,bytick.com,Crypto
+DOMAIN-SUFFIX,byapis.com,Crypto
+DOMAIN-SUFFIX,bycbe.com,Crypto
+DOMAIN-SUFFIX,bymj.io,Crypto
+DOMAIN-SUFFIX,byabcde.com,Crypto
+DOMAIN-SUFFIX,byapps.net,Crypto
+DOMAIN-SUFFIX,byd3c3.com,Crypto
+DOMAIN-SUFFIX,bybit.biz,Crypto
+DOMAIN-SUFFIX,bybdc6.com,Crypto
+DOMAIN-SUFFIX,bybit-global.com,Crypto
+DOMAIN-SUFFIX,bybit.cloud,Crypto
+DOMAIN-SUFFIX,bybitglobal.com,Crypto
+DOMAIN-SUFFIX,binance.com,Crypto
+DOMAIN-SUFFIX,binance.me,Crypto
+DOMAIN-SUFFIX,binance.cloud,Crypto
+DOMAIN-SUFFIX,binance.im,Crypto
+DOMAIN-SUFFIX,binance.info,Crypto
+DOMAIN-SUFFIX,binance.org,Crypto
+DOMAIN-SUFFIX,binance.vision,Crypto
+DOMAIN-SUFFIX,binancecnt.com,Crypto
+DOMAIN-SUFFIX,binancefuture.com,Crypto
+DOMAIN-SUFFIX,binanceapi.com,Crypto
+DOMAIN-SUFFIX,bnbstatic.com,Crypto
+DOMAIN-SUFFIX,bnbchain.org,Crypto
+DOMAIN-SUFFIX,bntrace.com,Crypto
+DOMAIN-SUFFIX,bnappzh.co,Crypto
+DOMAIN-SUFFIX,bnappzh.com,Crypto
+DOMAIN-SUFFIX,bnbzh.ac,Crypto
+DOMAIN-SUFFIX,bsappapi.com,Crypto
+DOMAIN-SUFFIX,bscdnweb.com,Crypto
+DOMAIN-SUFFIX,saasexch.com,Crypto
+DOMAIN-SUFFIX,saasexch.cc,Crypto
+DOMAIN-SUFFIX,saasexch.io,Crypto
+DOMAIN-SUFFIX,okx.com,Crypto
+DOMAIN-SUFFIX,okex.com,Crypto
+DOMAIN-SUFFIX,okx-dns.com,Crypto
+DOMAIN-SUFFIX,okx-dns1.com,Crypto
+DOMAIN-SUFFIX,okx-dns2.com,Crypto
+DOMAIN-SUFFIX,bitget.com,Crypto
+DOMAIN-SUFFIX,bitgetapp.com,Crypto
+DOMAIN-SUFFIX,gate.io,Crypto
+DOMAIN-SUFFIX,htx.com,Crypto
+DOMAIN-SUFFIX,huobi.com,Crypto
+DOMAIN-SUFFIX,kucoin.com,Crypto
+DOMAIN-SUFFIX,mexc.com,Crypto
+DOMAIN-SUFFIX,coinbase.com,Crypto
+DOMAIN-SUFFIX,crypto.com,Crypto
+DOMAIN-SUFFIX,kraken.com,Crypto
+DOMAIN-SUFFIX,deribit.com,Crypto
+DOMAIN-SUFFIX,hyperliquid.xyz,Crypto
+DOMAIN-SUFFIX,polymarket.com,Crypto
+DOMAIN-SUFFIX,coingecko.com,Crypto
+DOMAIN-SUFFIX,coinmarketcap.com,Crypto
+DOMAIN-SUFFIX,coinglass.com,Crypto
+DOMAIN-SUFFIX,aicoin.com,Crypto
+DOMAIN-SUFFIX,dexscreener.com,Crypto
+DOMAIN-SUFFIX,gmgn.ai,Crypto
+DOMAIN-SUFFIX,debank.com,Crypto
+DOMAIN-SUFFIX,metamask.io,Crypto
+DOMAIN-SUFFIX,phantom.app,Crypto
+DOMAIN-SUFFIX,backpack.exchange,Crypto
+DOMAIN-SUFFIX,uniswap.org,Crypto
+DOMAIN-SUFFIX,onekey.so,Crypto
+DOMAIN-SUFFIX,safepal.com,Crypto
+DOMAIN-SUFFIX,redotpay.com,Crypto
+DOMAIN-SUFFIX,trustwallet.com,Crypto
+DOMAIN-SUFFIX,tradingview.com,Crypto
+DOMAIN-SUFFIX,futunn.com,Crypto
+DOMAIN-SUFFIX,futuhk.com,Crypto
+DOMAIN-SUFFIX,moomoo.com,Crypto
+DOMAIN-SUFFIX,itiger.com,Crypto
+DOMAIN-SUFFIX,laohu8.com,Crypto
+DOMAIN-SUFFIX,longbridge.com,Crypto
+DOMAIN-SUFFIX,longbridgeapp.com,Crypto
+DOMAIN-SUFFIX,interactivebrokers.com,Crypto
+DOMAIN-SUFFIX,ibkr.com,Crypto
+DOMAIN-SUFFIX,schwab.com,Crypto
+DOMAIN-SUFFIX,firstrade.com,Crypto
+DOMAIN-SUFFIX,wise.com,Crypto
+
+# 7. Emby 辅助规则
 DOMAIN-SUFFIX,mb3admin.com,Emby
 DOMAIN-KEYWORD,emby,Emby
 
-# 7. Meta 全系显式域名补充
+# 8. Meta 全系显式域名补充
 DOMAIN-SUFFIX,facebook.com,Meta
 DOMAIN-SUFFIX,fb.com,Meta
 DOMAIN-SUFFIX,fbcdn.net,Meta
@@ -168,7 +239,7 @@ DOMAIN-SUFFIX,threads.com,Meta
 DOMAIN-SUFFIX,meta.com,Meta
 DOMAIN-SUFFIX,meta.ai,Meta
 
-# 8. Pornhub（blackmatrix7 无此 Loon 规则，原远程链接 404，改为本地规则）
+# 9. Pornhub（blackmatrix7 无此 Loon 规则，原远程链接 404，改为本地规则）
 DOMAIN-SUFFIX,pornhub.com,Media
 DOMAIN-SUFFIX,phncdn.com,Media
 DOMAIN-SUFFIX,phprcdn.com,Media
@@ -185,6 +256,11 @@ https://rule.kelee.one/Loon/GitHub.lsr, policy=默认代理, tag=GitHub, enabled
 
 # AI
 https://kelee.one/Tool/Loon/Lsr/AI.lsr, policy=AI, tag=AI, enabled=true
+
+# Crypto（加密货币与海外金融支付）
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Binance/Binance.list, policy=Crypto, tag=Binance, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Cryptocurrency/Cryptocurrency.list, policy=Crypto, tag=Crypto, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/PayPal/PayPal.list, policy=Crypto, tag=PayPal, enabled=true
 
 # Media
 https://rule.kelee.one/Loon/YouTube.lsr, policy=Media, tag=YouTube, enabled=true
