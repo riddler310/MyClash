@@ -41,62 +41,74 @@ bypass-tun=10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192
 # 可在 Loon「节点订阅」中添加，也可按 Loon 格式写在本段：订阅名称 = https://你的订阅地址
 
 [Remote Filter]
-# 地区筛选：过滤回国、校园、游戏等不属于普通地区节点的节点名。
-香港节点=NameRegex, FilterKey="^(?=.*((?i)🇭🇰|香港|(\b(HK|HKG|Hong)(\d+)?\b)))(?!.*((?i)❌|ENC|回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-台湾节点=NameRegex, FilterKey="^(?=.*((?i)🇹🇼|台湾|台北|(\b(TW|TWN|Tai|Taiwan)(\d+)?\b)))(?!.*((?i)❌|ENC|回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-日本节点=NameRegex, FilterKey="^(?=.*((?i)🇯🇵|日本|川日|东京|大阪|泉日|埼玉|(\b(JP|JPN|Japan)(\d+)?\b)))(?!.*((?i)❌|ENC|回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-新加坡节点=NameRegex, FilterKey="^(?=.*((?i)🇸🇬|新加坡|狮城|(\b(SG|SGP|Singapore)(\d+)?\b)))(?!.*((?i)❌|ENC|回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-美国节点=NameRegex, FilterKey="^(?=.*((?i)🇺🇸|🇺🇲|美国|美西|美东|美中|美南|美北|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|旧金山|纽约|弗吉尼亚|(\b(US|USA|United States)(\d+)?\b)))(?!.*((?i)❌|ENC|回国|校园|游戏|🎮|(\b(GAME)\b))).*$"
-# 全球节点：排除机场信息类节点；流量信息只匹配「数字+GB/TB」，不再误伤名称带 5G / 10G 的正常节点
-全球节点=NameRegex, FilterKey="^(?!.*((?i)❌|ENC|群|邀请|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|剩余|重置|套餐|余额|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|特别|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|好友|失联|http|\.com|(\b(USE|USED|TOTAL|EXPIRE|EMAIL|Panel|Channel|Author|Traffic)(\d+)?\b)|\d{4}-\d{2}-\d{2}|\d+(\.\d+)?\s*[GT]B)).+$"
+# 与 Mihomo 配置 1:1 对应的节点筛选器
+提示节点=NameRegex, FilterKey="(❌|✖)"
+自动测速节点=NameRegex, FilterKey="^(?=.*(⚡|❌低延迟))(?!.*((?i)⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+全球节点=NameRegex, FilterKey="^(?!.*((?i)⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+
+# 1. 各地区全部节点（排除 ❌ 提示节点）
+香港节点=NameRegex, FilterKey="^(?=.*((?i)香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+美国节点=NameRegex, FilterKey="^(?=.*((?i)美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+台湾节点=NameRegex, FilterKey="^(?=.*((?i)台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+日本节点=NameRegex, FilterKey="^(?=.*((?i)日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+新加坡节点=NameRegex, FilterKey="^(?=.*((?i)新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+其他地区节点=NameRegex, FilterKey="^(?!.*((?i)香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong|美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america|台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan|日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan|新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore|❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+
+# 2. 各地区带 ⚡ 的自动选择节点
+香港自动节点=NameRegex, FilterKey="^(?=.*⚡)(?=.*((?i)香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+美国自动节点=NameRegex, FilterKey="^(?=.*⚡)(?=.*((?i)美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+台湾自动节点=NameRegex, FilterKey="^(?=.*⚡)(?=.*((?i)台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+日本自动节点=NameRegex, FilterKey="^(?=.*⚡)(?=.*((?i)日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+新加坡自动节点=NameRegex, FilterKey="^(?=.*⚡)(?=.*((?i)新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore))(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+其他自动节点=NameRegex, FilterKey="^(?=.*⚡)(?!.*((?i)香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong|美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america|台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan|日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan|新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore|❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+
+# 3. Meta 专属节点
+Meta节点=NameRegex, FilterKey="^(?=.*(?i)Meta)(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
 
 [Proxy Group]
-# ------------------------------
-# 1. 全局与总入口策略
-默认代理=select, 香港, 自动选择, 手动选择, 日本, 美国, 新加坡, 台湾, 香港自动, 日本自动, 美国自动, 新加坡自动, 台湾自动, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Proxy.png
-自动选择=url-test, 全球节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Auto.png
-手动选择=select, 全球节点, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Static.png
+# --- 1. 默认代理：8 个组 + 仅保留带 ❌ 的提示节点 ---
+默认代理=select, 自动选择, 手动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 提示节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
 
-# ------------------------------
-# 2. 地区组（首项为该地区自动测速，也可直接手选单节点）
-香港=select, 香港自动, 香港节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-台湾=select, 台湾自动, 台湾节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
-日本=select, 日本自动, 日本节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
-新加坡=select, 新加坡自动, 新加坡节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
-美国=select, 美国自动, 美国节点, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+# --- 2. 自动选择（首位放 ❌ 死节点防德国抢跑 + 全部 ⚡ 节点） ---
+自动选择=url-test, 自动测速节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 
-# ------------------------------
-# 3. 服务分流组（各组首个候选项即默认选择）
-AI=select, 美国, 台湾, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ChatGPT.png
-# Bybit / 币安对美国、新加坡、香港有限制，默认优先走台湾
-Crypto=select, 台湾, 日本, 默认代理, 手动选择, 自动选择, 香港, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Cryptocurrency.png
-Media=select, 香港, 默认代理, 手动选择, 自动选择, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/ForeignMedia.png
-Meta=select, 台湾, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Facebook.png
-FCM=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/MiToverG422/Qure/master/IconSet/Color/fcm.png
-Google=select, 台湾, 美国, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google_Search.png
-Microsoft=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Microsoft.png
-# Apple 默认直连：Apple.list 含 17.0.0.0/8 与 App Store / iCloud / 推送等系统流量，走代理既耗流量又容易出问题
-Apple=select, DIRECT, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png
-Telegram=select, 新加坡, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Telegram.png
-NS=select, 全球节点, 默认代理, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Available.png
-Steam=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Steam.png
-TikTok=select, 台湾, 日本, 默认代理, 手动选择, 自动选择, 香港, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/TikTok.png
-Twitter=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Twitter.png
-Emby=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Emby.png
-Spotify=select, 台湾, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Spotify.png
-Speedtest Intl=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Speedtest.png
+# --- 3. 手动选择（全部节点，含 ❌ 提示节点） ---
+手动选择=select, 全球节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
 
-# ------------------------------
-# 4. 兜底策略
-漏网之鱼=select, 默认代理, 手动选择, 自动选择, 香港, 台湾, 日本, 新加坡, 美国, DIRECT, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Stack.png
+# --- 4. 地区组：第一项为各自的「XX-自动选择」 ---
+香港=select, 香港-自动选择, 香港节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
+美国=select, 美国-自动选择, 美国节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
+台湾=select, 台湾-自动选择, 台湾节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
+日本=select, 日本-自动选择, 日本节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
+新加坡=select, 新加坡-自动选择, 新加坡节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
+其他节点=select, 其他节点-自动选择, 其他地区节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
 
-# ------------------------------
-# 5. 各地区自动测速组（置于末尾，保持界面整洁）
-香港自动=url-test, 香港节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Hong_Kong.png
-台湾自动=url-test, 台湾节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Taiwan.png
-日本自动=url-test, 日本节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Japan.png
-新加坡自动=url-test, 新加坡节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Singapore.png
-美国自动=url-test, 美国节点, url=http://cp.cloudflare.com/generate_204, interval=600, tolerance=50, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/United_States.png
+# --- 5. 分流策略组（与 Mihomo 顺序、名称、默认项完全一致） ---
+AI=select, 美国, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png
+Crypto=select, 台湾, 日本, 默认代理, 手动选择, 自动选择, 香港, 新加坡, 美国, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cryptocurrency.png
+NodeSeek=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Server.png
+Meta=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, Meta节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png
+Media=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
+FCM=select, 直连, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, img-url=https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png
+Google=select, 美国, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png
+Microsoft=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
+Apple=select, 直连, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png
+Telegram=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+Steam=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
+TikTok=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png
+Twitter=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png
+Emby=select, 直连, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png
+Spotify=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
+漏网之鱼=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png
+直连=select, DIRECT, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png
+
+# --- 6. 各地区自动选择组（置于末尾，仅含该地区带 ⚡ 的节点） ---
+香港-自动选择=url-test, 香港自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+美国-自动选择=url-test, 美国自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+台湾-自动选择=url-test, 台湾自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+日本-自动选择=url-test, 日本自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+新加坡-自动选择=url-test, 新加坡自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+其他节点-自动选择=url-test, 其他自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 
 [Rule]
 # 1. 局域网和保留地址直连（IP 直连请求；局域网域名由 LAN_SPLITTER 处理）
@@ -109,33 +121,56 @@ IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
 IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
 
 # 2. 国内服务直连例外
-DOMAIN,fsend.cn,DIRECT
-DOMAIN,international-gfe.download.nvidia.com,DIRECT
-DOMAIN-SUFFIX,epicgames.com,DIRECT
-DOMAIN-SUFFIX,nvidia.cn,DIRECT
-DOMAIN-SUFFIX,apple.cn,DIRECT
-DOMAIN-SUFFIX,apple.com.cn,DIRECT
-DOMAIN-SUFFIX,icloud.com.cn,DIRECT
-DOMAIN-SUFFIX,microsoft.cn,DIRECT
-DOMAIN-SUFFIX,microsoft.com.cn,DIRECT
+DOMAIN,fsend.cn,直连
+DOMAIN,international-gfe.download.nvidia.com,直连
+DOMAIN-SUFFIX,epicgames.com,直连
+DOMAIN-SUFFIX,epicgames.dev,直连
+DOMAIN-SUFFIX,unrealengine.com,直连
+DOMAIN-SUFFIX,nvidia.cn,直连
+DOMAIN-SUFFIX,nvidia.com.cn,直连
+DOMAIN-SUFFIX,apple.cn,直连
+DOMAIN-SUFFIX,apple.com.cn,直连
+DOMAIN-SUFFIX,icloud.com.cn,直连
+DOMAIN-SUFFIX,microsoft.cn,直连
+DOMAIN-SUFFIX,microsoft.com.cn,直连
+DOMAIN-SUFFIX,office.com.cn,直连
+DOMAIN-SUFFIX,azure.cn,直连
+DOMAIN-SUFFIX,windowsazure.cn,直连
+DOMAIN,download.microsoft.com,直连
+DOMAIN,ntservicepack.microsoft.com,直连
 
 # 3. 拦截非中国 IP 的 QUIC，强制回落 TCP
 AND,((PROTOCOL,QUIC),(NOT,((GEOIP,CN)))),REJECT
 
-# 4. 优先修正 Claude / Grok 路由，避免被 X(Twitter) 等规则抢先匹配
+# 4. 优先修正 Claude / Grok 路由与防封号遥测分流，避免被 X(Twitter) 或微软规则抢先匹配
 DOMAIN-SUFFIX,claude.ai,AI
 DOMAIN-SUFFIX,claude.com,AI
 DOMAIN-SUFFIX,anthropic.com,AI
+DOMAIN-SUFFIX,claudeusercontent.com,AI
+DOMAIN-SUFFIX,clau.de,AI
+DOMAIN-SUFFIX,claude.codes,AI
+DOMAIN-SUFFIX,statsig.com,AI
+DOMAIN-SUFFIX,statsigapi.net,AI
+DOMAIN-SUFFIX,featuregates.org,AI
+DOMAIN-SUFFIX,intercom.io,AI
+DOMAIN-SUFFIX,intercomcdn.com,AI
+DOMAIN-SUFFIX,browser-intake-datadoghq.com,AI
+DOMAIN-SUFFIX,datadoghq-browser-agent.com,AI
+DOMAIN-SUFFIX,copilot.microsoft.com,AI
 DOMAIN-SUFFIX,grok.com,AI
 DOMAIN-SUFFIX,grok.x.com,AI
 DOMAIN-SUFFIX,x.ai,AI
+DOMAIN-SUFFIX,perplexity.ai,AI
+DOMAIN-SUFFIX,poe.com,AI
+DOMAIN-SUFFIX,character.ai,AI
+IP-CIDR,160.79.104.0/21,AI,no-resolve
 
 # 5. NodeSeek
-DOMAIN-SUFFIX,nodeseek.com,NS
-DOMAIN-SUFFIX,nodeseek.org,NS
-DOMAIN-SUFFIX,seek.li,NS
-DOMAIN-SUFFIX,nodeimage.com,NS
-DOMAIN-SUFFIX,nodequality.com,NS
+DOMAIN-SUFFIX,nodeseek.com,NodeSeek
+DOMAIN-SUFFIX,nodeseek.org,NodeSeek
+DOMAIN-SUFFIX,seek.li,NodeSeek
+DOMAIN-SUFFIX,nodeimage.com,NodeSeek
+DOMAIN-SUFFIX,nodequality.com,NodeSeek
 
 # 6. 金融与加密货币补充规则（Bybit / 币安 / OKX / Bitget / TradingView / 海外港美股券商与支付）
 DOMAIN-SUFFIX,bybit.com,Crypto
@@ -244,11 +279,15 @@ DOMAIN-SUFFIX,pornhub.com,Media
 DOMAIN-SUFFIX,phncdn.com,Media
 DOMAIN-SUFFIX,phprcdn.com,Media
 
+# 10. Google Play 下载（防止被 .cn 规则误判直连）
+DOMAIN,services.googleapis.cn,Google
+DOMAIN-SUFFIX,xn--ngstr-lra8j.com,Google
+
 FINAL,漏网之鱼
 
 [Remote Rule]
 # 私网 / GitHub 优先规则
-https://kelee.one/Tool/Loon/Lsr/LAN_SPLITTER.lsr, policy=DIRECT, tag=LAN, enabled=true
+https://kelee.one/Tool/Loon/Lsr/LAN_SPLITTER.lsr, policy=直连, tag=LAN, enabled=true
 # 原 Advertising_Domain.list 约 29 万条，内存占用过高且与 BlockAdvertisers 插件重复，已移除；
 # 如仍需规则级去广告，可启用下面的精简版（约 3.8 万条）
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/AdvertisingLite/AdvertisingLite.list, policy=REJECT, tag=AdBlock Lite, enabled=false
@@ -277,9 +316,9 @@ https://rule.kelee.one/Loon/Instagram.lsr, policy=Meta, tag=Instagram, enabled=t
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Whatsapp/Whatsapp.list, policy=Meta, tag=WhatsApp, enabled=true
 
 # 国内游戏下载直连
-https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/SteamCN/SteamCN.list, policy=DIRECT, tag=Steam CN, enabled=true
-https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Epic/Epic.list, policy=DIRECT, tag=Epic Games, enabled=true
-https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Game/GameDownloadCN/GameDownloadCN.list, policy=DIRECT, tag=Game Download CN, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/SteamCN/SteamCN.list, policy=直连, tag=Steam CN, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Epic/Epic.list, policy=直连, tag=Epic Games, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Game/GameDownloadCN/GameDownloadCN.list, policy=直连, tag=Game Download CN, enabled=true
 
 # Google 服务与 FCM；FCM 默认直连
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/GoogleFCM/GoogleFCM.list, policy=FCM, tag=Google FCM, enabled=true
@@ -297,14 +336,11 @@ https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/
 https://rule.kelee.one/Loon/Emby.lsr, policy=Emby, tag=Emby, enabled=true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Spotify/Spotify.list, policy=Spotify, tag=Spotify, enabled=true
 
-# Speedtest 国际测速
-https://kelee.one/Tool/Loon/Lsr/SpeedtestInternational.lsr, policy=Speedtest Intl, tag=Speedtest Intl, enabled=true
-
 # GFW / 海外通用规则：放在专用服务规则之后
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Global/Global.list, policy=默认代理, tag=GFW, enabled=true
 
 # 中国大陆区域规则最后加载
-https://kelee.one/Tool/Loon/Lsr/REGION_SPLITTER.lsr, policy=DIRECT, tag=CN REGION, enabled=true
+https://kelee.one/Tool/Loon/Lsr/REGION_SPLITTER.lsr, policy=直连, tag=CN REGION, enabled=true
 
 [Host]
 # DoH 服务端点固定映射，避免先用普通 DNS 解析 DoH 主机名
