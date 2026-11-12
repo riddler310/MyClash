@@ -43,7 +43,7 @@ bypass-tun=10.0.0.0/8,100.64.0.0/10,127.0.0.0/8,169.254.0.0/16,172.16.0.0/12,192
 [Remote Filter]
 # 与 Mihomo 配置 1:1 对应的节点筛选器
 提示节点=NameRegex, FilterKey="(❌|✖)"
-自动测速节点=NameRegex, FilterKey="^(?=.*(⚡|❌低延迟))(?!.*((?i)⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
+自动测速节点=NameRegex, FilterKey="^(?=.*⚡)(?!.*((?i)❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
 全球节点=NameRegex, FilterKey="^(?!.*((?i)⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\.com|traffic)).+$"
 
 # 1. 各地区全部节点（排除 ❌ 提示节点）
@@ -69,8 +69,8 @@ Meta节点=NameRegex, FilterKey="^(?=.*(?i)Meta)(?!.*((?i)❌|✖|⚠|群|返利
 # --- 1. 默认代理：8 个组 + 仅保留带 ❌ 的提示节点 ---
 默认代理=select, 自动选择, 手动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 提示节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
 
-# --- 2. 自动选择（首位放 ❌ 死节点防德国抢跑 + 全部 ⚡ 节点） ---
-自动选择=url-test, 自动测速节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+# --- 2. 自动选择（首位放 香港-自动选择 兜底防德国抢跑 + 全部 ⚡ 节点） ---
+自动选择=url-test, 香港-自动选择, 自动测速节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 
 # --- 3. 手动选择（全部节点，含 ❌ 提示节点） ---
 手动选择=select, 全球节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
