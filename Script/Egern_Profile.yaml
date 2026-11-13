@@ -1,6 +1,6 @@
 # ============================================================
 #  Egern 配置（由 Remnawave · Mihomo 软路由多端通用版 移植）
-#  使用前：把下方「默认代理」组里的订阅链接替换为你自己的 Remnawave 订阅链接（只改这一处）
+#  订阅链接只需填一处：导入后在 App 中编辑最末尾的「订阅」策略组（模板内为占位符，可安全上传 GitHub）
 # ============================================================
 
 # --- 基础全局配置 ---
@@ -18,6 +18,8 @@ block_quic: true
 proxy_latency_test_url: "https://www.gstatic.com/generate_204"
 # 使用 Loyalsoldier 增强版 GeoIP（国内 IP 段更准确，下载失败时自动回退内置库）
 geoip_db_url: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-without-asn.mmdb"
+# 在 App 中「添加订阅」时默认放入「订阅」组
+default_subscription_group: "订阅"
 
 # 使用真实 IP 的域名（对应 mihomo fake-ip-filter：局域网 / 联网检测 / NTP / 游戏联机 / QQ 快捷登录 / 智能家居 / 内网穿透）
 real_ip_domains:
@@ -112,25 +114,23 @@ dns:
 
 # --- 策略组 ---
 # 说明：
+#   - 订阅链接只在最后的「订阅」组里出现一次；其余组都通过 policies: ["订阅"] + flatten: true + filter 从中筛选节点。
+#   - Egern 的 flatten 会把 policies 中所有嵌套组展开成节点，无法「静态组 + 筛选节点」混排，
+#     因此地区组改为两级：香港 → [香港-自动选择, 香港-手动选择]，默认仍是自动选择，手动选节点多点一层。
 #   - Egern 没有 exclude-filter，排除逻辑统一写成 ^(?!.*(排除词)) 负向前瞻，并与包含条件合并到 filter。
-#   - filter 只作用于 urls 订阅节点；policies 里的静态策略组不会被 filter 过滤（未开启 flatten）。
-#   - 订阅链接用 YAML 锚点 &sub 定义一次，其余组用 *sub 引用。
 #   - Egern 的 timeout 单位为秒（mihomo 为毫秒），2000ms → 2。
 policy_groups:
-  # --- 1. 默认代理：8 个组 + 仅保留带 ❌ 的提示节点 ---
+  # --- 1. 默认代理：8 个组 + 机场公告（❌ 提示节点） ---
   - select:
       name: "默认代理"
-      policies: ["自动选择", "手动选择", "香港", "日本", "美国", "新加坡", "台湾", "其他节点"]
-      urls: &sub
-        - "https://你的Remnawave订阅链接"
-      filter: "(❌|✖)"
+      policies: ["自动选择", "手动选择", "香港", "日本", "美国", "新加坡", "台湾", "其他节点", "公告"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
 
-  # --- 2. 自动选择（首位放 香港-自动选择 兜底 + 全部 ⚡ 节点） ---
+  # --- 2. 自动选择（全部 ⚡ 节点） ---
   - auto_test:
       name: "自动选择"
-      policies: ["香港-自动选择"]
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*⚡"
       interval: 300
       tolerance: 50
@@ -140,51 +140,40 @@ policy_groups:
   # --- 3. 手动选择（全部节点，含 ❌ 提示节点） ---
   - select:
       name: "手动选择"
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).+"
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png"
 
-  # --- 4. 地区组：第一项为各自的「XX-自动选择」，并排除 ❌ 提示节点 ---
+  # --- 4. 地区组：默认「XX-自动选择」，需要指定节点时进「XX-手动选择」 ---
   - select:
       name: "香港"
-      policies: ["香港-自动选择"]
-      urls: *sub
-      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong)"
+      policies: ["香港-自动选择", "香港-手动选择"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
 
   - select:
       name: "美国"
-      policies: ["美国-自动选择"]
-      urls: *sub
-      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america)"
+      policies: ["美国-自动选择", "美国-手动选择"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
 
   - select:
       name: "台湾"
-      policies: ["台湾-自动选择"]
-      urls: *sub
-      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan)"
+      policies: ["台湾-自动选择", "台湾-手动选择"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
 
   - select:
       name: "日本"
-      policies: ["日本-自动选择"]
-      urls: *sub
-      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan)"
+      policies: ["日本-自动选择", "日本-手动选择"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
 
   - select:
       name: "新加坡"
-      policies: ["新加坡-自动选择"]
-      urls: *sub
-      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore)"
+      policies: ["新加坡-自动选择", "新加坡-手动选择"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
 
   - select:
       name: "其他节点"
-      policies: ["其他节点-自动选择"]
-      urls: *sub
-      filter: "(?i)^(?!.*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong|美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america|台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan|日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan|新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore|❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).+"
+      policies: ["其他节点-自动选择", "其他节点-手动选择"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
 
   # --- 5. 分流策略组 ---
@@ -207,10 +196,8 @@ policy_groups:
 
   - select:
       name: "Meta"
-      policies: *service_default
-      # 额外追加订阅中名称含 Meta 的专用节点（排除 ❌ 提示节点）
-      urls: *sub
-      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*Meta"
+      # 末尾追加订阅中名称含 Meta 的专用节点
+      policies: ["默认代理", "手动选择", "自动选择", "香港", "日本", "美国", "新加坡", "台湾", "其他节点", "直连", "Meta-专用节点"]
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png"
 
   - select:
@@ -284,10 +271,11 @@ policy_groups:
       block_quic: false
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png"
 
-  # --- 6. 各地区自动选择组（置于末尾，仅含该地区带 ⚡ 的节点） ---
+  # --- 6. 各地区自动选择组（仅含该地区带 ⚡ 的节点） ---
   - auto_test:
       name: "香港-自动选择"
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong)"
       interval: 300
       tolerance: 50
@@ -296,7 +284,8 @@ policy_groups:
 
   - auto_test:
       name: "美国-自动选择"
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america)"
       interval: 300
       tolerance: 50
@@ -305,7 +294,8 @@ policy_groups:
 
   - auto_test:
       name: "台湾-自动选择"
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan)"
       interval: 300
       tolerance: 50
@@ -314,7 +304,8 @@ policy_groups:
 
   - auto_test:
       name: "日本-自动选择"
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan)"
       interval: 300
       tolerance: 50
@@ -323,7 +314,8 @@ policy_groups:
 
   - auto_test:
       name: "新加坡-自动选择"
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore)"
       interval: 300
       tolerance: 50
@@ -332,12 +324,82 @@ policy_groups:
 
   - auto_test:
       name: "其他节点-自动选择"
-      urls: *sub
+      policies: ["订阅"]
+      flatten: true
       filter: "(?i)^(?!.*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong|美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america|台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan|日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan|新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore|❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*⚡"
       interval: 300
       tolerance: 50
       timeout: 2
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+  # --- 7. 各地区手动选择组（该地区全部节点，排除 ❌ 提示节点） ---
+  - select:
+      name: "香港-手动选择"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
+
+  - select:
+      name: "美国-手动选择"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
+
+  - select:
+      name: "台湾-手动选择"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
+
+  - select:
+      name: "日本-手动选择"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
+
+  - select:
+      name: "新加坡-手动选择"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
+
+  - select:
+      name: "其他节点-手动选择"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(?i)^(?!.*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong|美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america|台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan|日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan|新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore|❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).+"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
+
+  # --- 8. 辅助组 ---
+  # Meta 专用节点（订阅中名称含 Meta 的节点）
+  - select:
+      name: "Meta-专用节点"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*Meta"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png"
+
+  # 机场公告（订阅中带 ❌ / ✖ 的提示节点，仅用于查看提示）
+  - select:
+      name: "公告"
+      policies: ["订阅"]
+      flatten: true
+      filter: "(❌|✖)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png"
+
+  # ★ 订阅：唯一需要填写订阅链接的地方（导入后在 App 中编辑此组，把链接替换为你自己的）
+  - external:
+      name: "订阅"
+      type: select
+      urls:
+        - "https://你的Remnawave订阅链接"
+      update_interval: 86400
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png"
 
 # --- 路由规则 ---
 # 规则集来源：blackmatrix7（Surge 格式）、Sukka（AI / Apple / 微软 CDN）、Repcz（Telegram，Egern 原生格式）
