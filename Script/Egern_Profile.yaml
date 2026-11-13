@@ -1,1036 +1,795 @@
-http_port: 6152
-socks_port: 6153
-vif_only: true
+# ============================================================
+#  Egern 配置（由 Remnawave · Mihomo 软路由多端通用版 移植）
+#  使用前：把下方「默认代理」组里的订阅链接替换为你自己的 Remnawave 订阅链接（只改这一处）
+# ============================================================
+
+# --- 基础全局配置 ---
+ipv6: true
+http_port: 7890
+socks_port: 7891
+# iOS 上不对局域网开放代理端口（对应 mihomo allow-lan，手机端无需开启）
+allow_external_connections: false
+# 劫持所有 53 端口 DNS（对应 mihomo dns-hijack any:53）
 hijack_dns:
-- '*:53'
-geoip_db_url: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-without-asn.mmdb
-asn_db_url: https://raw.githubusercontent.com/Loyalsoldier/geoip/release/GeoLite2-ASN.mmdb
-proxy_latency_test_url: http://1.1.1.1/generate_204
-direct_latency_test_url: http://wifi.vivo.com.cn/generate_204
-dns:
-  bootstrap:
-  - 223.5.5.5
-  - 119.29.29.29
-  upstreams:
-    Domestic-Encrypted-DNS:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
-    Foreign-Encrypted-DNS:
-    - https://dns.cloudflare.com/dns-query
-    - https://dns.google/dns-query
-  forward:
-  - proxy_rule_set:
-      match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
-      value: reject
-      disabled: false
-      update_interval: 86400
-  - proxy_rule_set:
-      match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
-      value: Domestic-Encrypted-DNS
-      disabled: false
-      update_interval: 86400
-  - domain_wildcard:
-      match: '*'
-      value: Foreign-Encrypted-DNS
-      disabled: false
-  hosts:
-    dns.alidns.com:
-    - 223.5.5.5
-    - 223.6.6.6
-    doh.pub:
-    - 1.12.12.12
-    - 120.53.53.53
-    dot.pub:
-    - 1.12.12.12
-    - 120.53.53.53
-    dns.cloudflare.com:
-    - 1.1.1.1
-    - 1.0.0.1
-    dns.google:
-    - 8.8.8.8
-    - 8.8.4.4
-    cloudflare-dns.com:
-    - 104.16.249.249
-    - 104.16.248.249
-    services.googleapis.cn: services.googleapis.com
-    mcdn.bilivideo.com:
-    - 0.0.0.0
-    '*.mcdn.bilivideo.com':
-    - 0.0.0.0
-    mcdn.bilivideo.cn:
-    - 0.0.0.0
-    '*.mcdn.bilivideo.cn':
-    - 0.0.0.0
-    edge.mountaintoys.cn:
-    - 0.0.0.0
-    '*.edge.mountaintoys.cn':
-    - 0.0.0.0
-  proxy_nameservers:
-  - https://dns.alidns.com/dns-query
-  - https://doh.pub/dns-query
+  - "*:53"
+# 全局阻止 QUIC，强制回落 TCP；「直连」组单独放行（对应 mihomo「拦截非国内 QUIC」规则）
+block_quic: true
+# 测速地址与 mihomo 保持一致
+proxy_latency_test_url: "https://www.gstatic.com/generate_204"
+# 使用 Loyalsoldier 增强版 GeoIP（国内 IP 段更准确，下载失败时自动回退内置库）
+geoip_db_url: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-without-asn.mmdb"
+
+# 使用真实 IP 的域名（对应 mihomo fake-ip-filter：局域网 / 联网检测 / NTP / 游戏联机 / QQ 快捷登录 / 智能家居 / 内网穿透）
 real_ip_domains:
-- lancache.steamcontent.com
-- '*.msftconnecttest.com'
-- '*.msftncsi.com'
-- '*.srv.nintendo.net'
-- '*.stun.playstation.net'
-- xbox.*.microsoft.com
-- '*.xboxlive.com'
-- '*.logon.battlenet.com.cn'
-- '*.logon.battle.net'
-- stun.l.google.com
-- easy-login.10099.com.cn
-- '*-update.xoyocdn.com'
-- '*.prod.cloud.netflix.com'
-- appboot.netflix.com
-- '*-appboot.netflix.com'
+  - "localhost"
+  - "*.localhost"
+  - "*.local"
+  - "*.lan"
+  - "*.home.arpa"
+  - "*.msftconnecttest.com"
+  - "msftconnecttest.com"
+  - "*.msftncsi.com"
+  - "msftncsi.com"
+  - "captive.apple.com"
+  - "connectivitycheck.gstatic.com"
+  - "*.connectivitycheck.platform.hicloud.com"
+  - "connect.rom.miui.com"
+  - "*.pool.ntp.org"
+  - "time.*.com"
+  - "ntp.*.com"
+  - "localhost.ptlogin2.qq.com"
+  - "localhost.sec.qq.com"
+  - "*.srv.nintendo.net"
+  - "*.stun.playstation.net"
+  - "xbox.*.microsoft.com"
+  - "*.xboxlive.com"
+  - "xboxlive.com"
+  - "*.battlenet.com.cn"
+  - "*.io.mi.com"
+  - "*.market.xiaomi.com"
+  - "*.oray.com"
+  - "oray.com"
+  - "*.sunlogin.net"
+  - "sunlogin.net"
+  - "*.push.apple.com"
+
+# --- DNS ---
+dns:
+  # 启动 DNS（仅 UDP，用于兜底）
+  bootstrap:
+    - 223.5.5.5
+    - 119.29.29.29
+  upstreams:
+    # 国内加密 DoH（直连）
+    china:
+      - "https://dns.alidns.com/dns-query"
+      - "https://doh.pub/dns-query"
+    # 海外加密 DoH（Egern 默认 DNS 连接上游时遵循代理规则，会经「默认代理 / Google」组出站）
+    foreign:
+      - "https://dns.cloudflare.com/dns-query"
+      - "https://dns.google/dns-query"
+  forward:
+    # 局域网主机名交给系统 DNS（即路由器）解析
+    - domain:
+        match: "localhost"
+        value: system
+    - domain_suffix:
+        match: "localhost"
+        value: system
+    - domain_suffix:
+        match: "local"
+        value: system
+    - domain_suffix:
+        match: "lan"
+        value: system
+    - domain_suffix:
+        match: "home.arpa"
+        value: system
+    # 国内域名走国内 DoH
+    - proxy_rule_set:
+        match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/ChinaMax/ChinaMax.list"
+        value: china
+        update_interval: 86400
+    # 其余域名走海外 DoH
+    - domain_wildcard:
+        match: "*"
+        value: foreign
+  # 代理服务器域名解析：强制直连国内 DoH（对应 mihomo proxy-server-nameserver）
+  proxy_nameservers:
+    - "https://dns.alidns.com/dns-query"
+    - "https://doh.pub/dns-query"
+  hosts:
+    "dns.alidns.com": ["223.5.5.5", "223.6.6.6"]
+    "doh.pub": ["1.12.12.12", "120.53.53.53"]
+    "dns.cloudflare.com": ["1.1.1.1", "1.0.0.1"]
+    "dns.google": ["8.8.8.8", "8.8.4.4"]
+    # 解决谷歌商店无法下载的问题
+    "services.googleapis.cn": "services.googleapis.com"
+    # 屏蔽哔哩哔哩 PCDN（规则中另有 REJECT 双保险）
+    "*.mcdn.bilivideo.com": "0.0.0.0"
+    "*.mcdn.bilivideo.cn": "0.0.0.0"
+    "*.edge.mountaintoys.cn": "0.0.0.0"
+
+# --- 策略组 ---
+# 说明：
+#   - Egern 没有 exclude-filter，排除逻辑统一写成 ^(?!.*(排除词)) 负向前瞻，并与包含条件合并到 filter。
+#   - filter 只作用于 urls 订阅节点；policies 里的静态策略组不会被 filter 过滤（未开启 flatten）。
+#   - 订阅链接用 YAML 锚点 &sub 定义一次，其余组用 *sub 引用。
+#   - Egern 的 timeout 单位为秒（mihomo 为毫秒），2000ms → 2。
 policy_groups:
-- external:
-    name: Manual
-    type: select
-    urls:
-    - https://rw.253768.xyz/rNnuEbY9S6zHxUPW
-    update_interval: 86400
-    hidden: false
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
-    filter: (?i)^(?!.*(?:❌|ENC)).+$
-- select:
-    name: 手动选择
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
-    flatten: true
-    filter: .+
-- auto_test:
-    name: 自动选择
-    policies:
-    - Manual
-    flatten: true
-    filter: .+
-    interval: 600
-    tolerance: 50
-    timeout: 5
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
-- select:
-    name: 默认代理
-    policies:
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    - 手动选择
-    - 自动选择
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
-- select:
-    name: AI
-    policies:
-    - 台湾省
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png
-- select:
-    name: Media
-    policies:
-    - 香港
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
-- select:
-    name: Meta
-    policies:
-    - 台湾省
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png
-- select:
-    name: FCM
-    policies:
-    - DIRECT
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png
-- select:
-    name: Google
-    policies:
-    - 台湾省
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png
-- select:
-    name: Microsoft
-    policies:
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
-- select:
-    name: Apple
-    policies:
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png
-- select:
-    name: Telegram
-    policies:
-    - 新加坡
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 台湾省
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
-- select:
-    name: NS
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Available.png
-    flatten: true
-    filter: .+
-- select:
-    name: Steam
-    policies:
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
-- select:
-    name: TikTok
-    policies:
-    - 日本
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png
-- select:
-    name: Twitter
-    policies:
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png
-- select:
-    name: Emby
-    policies:
-    - DIRECT
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png
-- select:
-    name: Spotify
-    policies:
-    - 台湾省
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 其他节点
-    - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png
-- select:
-    name: 直连
-    policies:
-    - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png
-- select:
-    name: 漏网之鱼
-    policies:
-    - 美国
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - 香港
-    - 日本
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    - DIRECT
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png
-- select:
-    name: GLOBAL
-    policies:
-    - 默认代理
-    - 手动选择
-    - 自动选择
-    - AI
-    - Media
-    - Meta
-    - FCM
-    - Google
-    - Microsoft
-    - Apple
-    - Telegram
-    - NS
-    - Steam
-    - TikTok
-    - Twitter
-    - Emby
-    - Spotify
-    - 直连
-    - 漏网之鱼
-    - 香港
-    - 日本
-    - 美国
-    - 新加坡
-    - 台湾省
-    - 其他节点
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
-- select:
-    name: 香港
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png
-    flatten: true
-    filter: (?i)香港|🇭🇰|\bHK\b|Hong.?Kong|HKG
-- select:
-    name: 日本
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png
-    flatten: true
-    filter: (?i)日本|东京|大阪|🇯🇵|\bJP\b|Japan|JPN
-- select:
-    name: 美国
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png
-    flatten: true
-    filter: (?i)美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|🇺🇸|\bUS\b|America|United.?States|USA
-- select:
-    name: 新加坡
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
-    flatten: true
-    filter: (?i)新加坡|狮城|🇸🇬|\bSG\b|Singapore|SGP
-- select:
-    name: 台湾省
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png
-    flatten: true
-    filter: (?i)台湾|台灣|🇹🇼|\bTW\b|Taiwan|TWN
-- select:
-    name: 其他节点
-    policies:
-    - Manual
-    icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/World_Map.png
-    flatten: true
-    filter: (?i)^(?!.*(?:香港|🇭🇰|\bHK\b|Hong.?Kong|HKG|日本|东京|大阪|🇯🇵|\bJP\b|Japan|JPN|美国|美西|美东|夏威夷|弗吉尼亚|弗尼基亚|🇺🇸|\bUS\b|America|United.?States|USA|新加坡|狮城|🇸🇬|\bSG\b|Singapore|SGP|台湾|台灣|🇹🇼|\bTW\b|Taiwan|TWN)).+$
+  # --- 1. 默认代理：8 个组 + 仅保留带 ❌ 的提示节点 ---
+  - select:
+      name: "默认代理"
+      policies: ["自动选择", "手动选择", "香港", "日本", "美国", "新加坡", "台湾", "其他节点"]
+      urls: &sub
+        - "https://你的Remnawave订阅链接"
+      filter: "(❌|✖)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png"
+
+  # --- 2. 自动选择（首位放 香港-自动选择 兜底 + 全部 ⚡ 节点） ---
+  - auto_test:
+      name: "自动选择"
+      policies: ["香港-自动选择"]
+      urls: *sub
+      filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*⚡"
+      interval: 300
+      tolerance: 50
+      timeout: 2
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+  # --- 3. 手动选择（全部节点，含 ❌ 提示节点） ---
+  - select:
+      name: "手动选择"
+      urls: *sub
+      filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).+"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png"
+
+  # --- 4. 地区组：第一项为各自的「XX-自动选择」，并排除 ❌ 提示节点 ---
+  - select:
+      name: "香港"
+      policies: ["香港-自动选择"]
+      urls: *sub
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png"
+
+  - select:
+      name: "美国"
+      policies: ["美国-自动选择"]
+      urls: *sub
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png"
+
+  - select:
+      name: "台湾"
+      policies: ["台湾-自动选择"]
+      urls: *sub
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png"
+
+  - select:
+      name: "日本"
+      policies: ["日本-自动选择"]
+      urls: *sub
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png"
+
+  - select:
+      name: "新加坡"
+      policies: ["新加坡-自动选择"]
+      urls: *sub
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*(新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore)"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png"
+
+  - select:
+      name: "其他节点"
+      policies: ["其他节点-自动选择"]
+      urls: *sub
+      filter: "(?i)^(?!.*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong|美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america|台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan|日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan|新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore|❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).+"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png"
+
+  # --- 5. 分流策略组 ---
+  - select:
+      name: "AI"
+      # AI 默认美国
+      policies: &service_us_first ["美国", "默认代理", "手动选择", "自动选择", "香港", "日本", "新加坡", "台湾", "其他节点", "直连"]
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png"
+
+  - select:
+      name: "Crypto"
+      # Bybit / 币安（Binance）对美国、新加坡、香港有限制，默认优先走台湾
+      policies: ["台湾", "日本", "默认代理", "手动选择", "自动选择", "香港", "新加坡", "美国", "其他节点", "直连"]
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cryptocurrency.png"
+
+  - select:
+      name: "NodeSeek"
+      policies: &service_default ["默认代理", "手动选择", "自动选择", "香港", "日本", "美国", "新加坡", "台湾", "其他节点", "直连"]
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Server.png"
+
+  - select:
+      name: "Meta"
+      policies: *service_default
+      # 额外追加订阅中名称含 Meta 的专用节点（排除 ❌ 提示节点）
+      urls: *sub
+      filter: "(?i)^(?!.*(❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*Meta"
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png"
+
+  - select:
+      name: "Media"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png"
+
+  - select:
+      name: "FCM"
+      # FCM 默认直连
+      policies: &service_direct_first ["直连", "默认代理", "手动选择", "自动选择", "香港", "日本", "美国", "新加坡", "台湾", "其他节点"]
+      icon: "https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png"
+
+  - select:
+      name: "Google"
+      # Google 默认美国
+      policies: *service_us_first
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png"
+
+  - select:
+      name: "Microsoft"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png"
+
+  - select:
+      name: "Apple"
+      # Apple 默认直连（避免系统更新/App Store/iCloud 相册备份消耗代理流量及触发异地风控）
+      policies: *service_direct_first
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png"
+
+  - select:
+      name: "Telegram"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png"
+
+  - select:
+      name: "Steam"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png"
+
+  - select:
+      name: "TikTok"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/TikTok.png"
+
+  - select:
+      name: "Twitter"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Twitter.png"
+
+  - select:
+      name: "Emby"
+      # Emby 默认直连
+      policies: *service_direct_first
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Emby.png"
+
+  - select:
+      name: "Spotify"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png"
+
+  - select:
+      name: "漏网之鱼"
+      policies: *service_default
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Stack.png"
+
+  - select:
+      name: "直连"
+      policies: ["DIRECT"]
+      # 直连流量放行 QUIC（覆盖全局 block_quic）
+      block_quic: false
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png"
+
+  # --- 6. 各地区自动选择组（置于末尾，仅含该地区带 ⚡ 的节点） ---
+  - auto_test:
+      name: "香港-自动选择"
+      urls: *sub
+      filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong)"
+      interval: 300
+      tolerance: 50
+      timeout: 2
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+  - auto_test:
+      name: "美国-自动选择"
+      urls: *sub
+      filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america)"
+      interval: 300
+      tolerance: 50
+      timeout: 2
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+  - auto_test:
+      name: "台湾-自动选择"
+      urls: *sub
+      filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan)"
+      interval: 300
+      tolerance: 50
+      timeout: 2
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+  - auto_test:
+      name: "日本-自动选择"
+      urls: *sub
+      filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan)"
+      interval: 300
+      tolerance: 50
+      timeout: 2
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+  - auto_test:
+      name: "新加坡-自动选择"
+      urls: *sub
+      filter: "(?i)^(?!.*(⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic))(?=.*⚡).*(新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore)"
+      interval: 300
+      tolerance: 50
+      timeout: 2
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+  - auto_test:
+      name: "其他节点-自动选择"
+      urls: *sub
+      filter: "(?i)^(?!.*(香港|🇭🇰|(?<![a-z])HK[GT]?(?![a-z])|hong ?kong|美国|美西|美东|🇺🇸|🇺🇲|洛杉矶|圣何塞|圣荷西|旧金山|西雅图|芝加哥|纽约|硅谷|达拉斯|凤凰城|弗吉尼亚|(?<![a-z])USA?(?![a-z])|united ?states|america|台湾|台北|台中|新北|🇹🇼|(?<![a-z])TWN?(?![a-z])|taiwan|日本|东京|大阪|🇯🇵|(?<![a-z])JPN?(?![a-z])|japan|新加坡|狮城|🇸🇬|(?<![a-z])SGP?(?![a-z])|singapore|❌|✖|⚠|群|返利|循环|官网|客服|网站|网址|获取|订阅|流量|到期|机场|下次|版本|官址|备用|过期|已用|联系|邮箱|工单|贩卖|通知|倒卖|防止|国内|地址|频道|无法|说明|使用|提示|访问|支持|教程|关注|更新|作者|加入|超时|收藏|福利|邀请|好友|失联|剩余|公益|发布|DIZTNA|通路|登录|禁止|定时|渠道|牢记|永久|余额|阁下|本站|刷新|导航|建议|重置|以下|@|expire|http|\\.com|traffic)).*⚡"
+      interval: 300
+      tolerance: 50
+      timeout: 2
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png"
+
+# --- 路由规则 ---
+# 规则集来源：blackmatrix7（Surge 格式）、Sukka（AI / Apple / 微软 CDN）、Repcz（Telegram，Egern 原生格式）
 rules:
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Lan.yaml
-    policy: DIRECT
-    update_interval: 86400
-    name: 局域网直连
-- ip_cidr:
-    match: 10.0.0.0/8
-    name: RFC1918-10
-    policy: DIRECT
-- ip_cidr:
-    match: 172.16.0.0/12
-    name: RFC1918-172
-    policy: DIRECT
-- ip_cidr:
-    match: 192.168.0.0/16
-    name: RFC1918-192
-    policy: DIRECT
-- ip_cidr:
-    match: 127.0.0.0/8
-    name: Loopback
-    policy: DIRECT
-- ip_cidr6:
-    match: fc00::/7
-    name: IPv6-ULA
-    policy: DIRECT
-- ip_cidr6:
-    match: fe80::/10
-    name: IPv6-LinkLocal
-    policy: DIRECT
-- domain:
-    match: dns.alidns.com
-    name: 国内 DoH 直连
-    policy: DIRECT
-- domain:
-    match: doh.pub
-    name: 国内 DoH 直连
-    policy: DIRECT
-- domain:
-    match: dot.pub
-    name: 国内 DoH 直连
-    policy: DIRECT
-- domain:
-    match: dns.cloudflare.com
-    name: 境外 DoH 走默认代理
-    policy: 默认代理
-- domain:
-    match: dns.google
-    name: 境外 DoH 走默认代理
-    policy: 默认代理
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Reject.yaml
-    policy: REJECT
-    update_interval: 86400
-    name: 广告与拒绝规则
-- and:
-    name: 禁用境外 QUIC
-    match:
-    - protocol:
-        match: quic
-    - not:
-        match:
-          geoip:
-            match: CN
-            no_resolve: true
-    policy: REJECT
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Github.yaml
-    policy: 默认代理
-    update_interval: 86400
-    name: GitHub 强制代理
-- domain_suffix:
-    match: github.com
-    name: GitHub
-    policy: 默认代理
-- domain_suffix:
-    match: githubusercontent.com
-    name: GitHub
-    policy: 默认代理
-- domain_suffix:
-    match: githubassets.com
-    name: GitHub
-    policy: 默认代理
-- domain_suffix:
-    match: github.blog
-    name: GitHub
-    policy: 默认代理
-- domain:
-    match: fsend.cn
-    name: 国内直连例外
-    policy: DIRECT
-- domain:
-    match: international-gfe.download.nvidia.com
-    name: NVIDIA 下载直连
-    policy: DIRECT
-- domain_suffix:
-    match: apple.com.cn
-    name: Apple 中国域名
-    policy: DIRECT
-- domain_suffix:
-    match: icloud.com.cn
-    name: iCloud 中国域名
-    policy: DIRECT
-- domain_suffix:
-    match: microsoft.com.cn
-    name: Microsoft 中国域名
-    policy: DIRECT
-- domain_suffix:
-    match: gemini.google.com
-    name: Google Gemini 例外
-    policy: Google
-- domain_suffix:
-    match: bard.google.com
-    name: Google Gemini 例外
-    policy: Google
-- domain_suffix:
-    match: aistudio.google.com
-    name: Google Gemini 例外
-    policy: Google
-- domain_suffix:
-    match: generativelanguage.googleapis.com
-    name: Google Gemini 例外
-    policy: Google
-- domain_suffix:
-    match: ai.google.dev
-    name: Google Gemini 例外
-    policy: Google
-- domain_suffix:
-    match: anthropic.com
-    name: AI 服务
-    policy: AI
-- domain_suffix:
-    match: claude.ai
-    name: AI 服务
-    policy: AI
-- domain_suffix:
-    match: claude.com
-    name: AI 服务
-    policy: AI
-- domain_suffix:
-    match: grok.com
-    name: AI 服务
-    policy: AI
-- domain_suffix:
-    match: x.ai
-    name: AI 服务
-    policy: AI
-- domain_suffix:
-    match: perplexity.ai
-    name: AI 服务
-    policy: AI
-- domain_suffix:
-    match: openai.com
-    name: AI 服务
-    policy: AI
-- domain_suffix:
-    match: chatgpt.com
-    name: AI 服务
-    policy: AI
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/AI.yaml
-    policy: AI
-    update_interval: 86400
-    name: AI 规则集
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Netflix.yaml
-    policy: Media
-    update_interval: 86400
-    name: 流媒体规则集
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Disney.yaml
-    policy: Media
-    update_interval: 86400
-    name: 流媒体规则集
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/PrimeVideo.yaml
-    policy: Media
-    update_interval: 86400
-    name: 流媒体规则集
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/HBO.yaml
-    policy: Media
-    update_interval: 86400
-    name: 流媒体规则集
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Bahamut.yaml
-    policy: Media
-    update_interval: 86400
-    name: 流媒体规则集
-- domain_suffix:
-    match: youtube.com
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: youtube-nocookie.com
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: googlevideo.com
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: ytimg.com
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: youtu.be
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: twitch.tv
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: ttvnw.net
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: niconico.jp
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: nicovideo.jp
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: bbc.co.uk
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: bbc.com
-    name: 海外影音
-    policy: Media
-- domain_suffix:
-    match: pornhub.com
-    name: 海外影音
-    policy: Media
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Facebook.yaml
-    policy: Meta
-    update_interval: 86400
-    name: Facebook/Meta 规则集
-- domain_suffix:
-    match: facebook.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: facebook.net
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: fbcdn.net
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: fbsbx.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: messenger.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: instagram.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: cdninstagram.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: whatsapp.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: whatsapp.net
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: whatsapp-cdn.net
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: threads.net
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: threads.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: meta.com
-    name: Meta 全系
-    policy: Meta
-- domain_suffix:
-    match: mtalk.google.com
-    name: Google FCM
-    policy: FCM
-- domain_suffix:
-    match: mtalk4.google.com
-    name: Google FCM
-    policy: FCM
-- domain_suffix:
-    match: mtalk-staging.google.com
-    name: Google FCM
-    policy: FCM
-- domain_suffix:
-    match: fcm.googleapis.com
-    name: Google FCM
-    policy: FCM
-- domain_suffix:
-    match: firebaseinstallations.googleapis.com
-    name: Google FCM
-    policy: FCM
-- domain_suffix:
-    match: firebaseappcheck.googleapis.com
-    name: Google FCM
-    policy: FCM
-- domain_suffix:
-    match: android.googleapis.com
-    name: Google FCM
-    policy: FCM
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Google.yaml
-    policy: Google
-    update_interval: 86400
-    name: Google 规则集
-- domain_suffix:
-    match: google.com
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: googleusercontent.com
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: gstatic.com
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: googleapis.com
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: google.co.jp
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: google.co.uk
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: google.ca
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: google.com.au
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: googleplay.com
-    name: Google 服务
-    policy: Google
-- domain_suffix:
-    match: play.google.com
-    name: Google 服务
-    policy: Google
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Microsoft.yaml
-    policy: Microsoft
-    update_interval: 86400
-    name: Microsoft 规则集
-- domain_suffix:
-    match: microsoft.com
-    name: Microsoft 服务
-    policy: Microsoft
-- domain_suffix:
-    match: microsoftonline.com
-    name: Microsoft 服务
-    policy: Microsoft
-- domain_suffix:
-    match: live.com
-    name: Microsoft 服务
-    policy: Microsoft
-- domain_suffix:
-    match: office.com
-    name: Microsoft 服务
-    policy: Microsoft
-- domain_suffix:
-    match: windows.net
-    name: Microsoft 服务
-    policy: Microsoft
-- domain_suffix:
-    match: azure.com
-    name: Microsoft 服务
-    policy: Microsoft
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/AppleServers.yaml
-    policy: Apple
-    update_interval: 86400
-    name: Apple 规则集
-- domain_suffix:
-    match: apple.com
-    name: Apple 服务
-    policy: Apple
-- domain_suffix:
-    match: icloud.com
-    name: Apple 服务
-    policy: Apple
-- domain_suffix:
-    match: apple-cloudkit.com
-    name: Apple 服务
-    policy: Apple
-- domain_suffix:
-    match: mzstatic.com
-    name: Apple 服务
-    policy: Apple
-- domain_suffix:
-    match: itunes.com
-    name: Apple 服务
-    policy: Apple
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Telegram.yaml
-    policy: Telegram
-    update_interval: 86400
-    name: Telegram 规则集
-- domain_suffix:
-    match: t.me
-    name: Telegram
-    policy: Telegram
-- domain_suffix:
-    match: telegram.org
-    name: Telegram
-    policy: Telegram
-- domain_suffix:
-    match: telegram.me
-    name: Telegram
-    policy: Telegram
-- domain_suffix:
-    match: telegram.dog
-    name: Telegram
-    policy: Telegram
-- domain_suffix:
-    match: telegra.ph
-    name: Telegram
-    policy: Telegram
-- domain_suffix:
-    match: nodeseek.com
-    name: NodeSeek
-    policy: NS
-- domain_suffix:
-    match: nodeseek.org
-    name: NodeSeek
-    policy: NS
-- domain_suffix:
-    match: seek.li
-    name: NodeSeek
-    policy: NS
-- domain_suffix:
-    match: nodeimage.com
-    name: NodeSeek
-    policy: NS
-- domain_suffix:
-    match: steampowered.com
-    name: Steam
-    policy: Steam
-- domain_suffix:
-    match: steamcommunity.com
-    name: Steam
-    policy: Steam
-- domain_suffix:
-    match: steamstatic.com
-    name: Steam
-    policy: Steam
-- domain_suffix:
-    match: steamcontent.com
-    name: Steam
-    policy: Steam
-- domain_suffix:
-    match: steamserver.net
-    name: Steam
-    policy: Steam
-- domain_suffix:
-    match: steam-chat.com
-    name: Steam
-    policy: Steam
-- domain_suffix:
-    match: steamgames.com
-    name: Steam
-    policy: Steam
-- domain_suffix:
-    match: steamusercontent.com
-    name: Steam
-    policy: Steam
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/TikTok.yaml
-    policy: TikTok
-    update_interval: 86400
-    name: TikTok 规则集
-- domain_suffix:
-    match: tiktok.com
-    name: TikTok
-    policy: TikTok
-- domain_suffix:
-    match: tiktokv.com
-    name: TikTok
-    policy: TikTok
-- domain_suffix:
-    match: tiktokcdn.com
-    name: TikTok
-    policy: TikTok
-- domain_suffix:
-    match: musical.ly
-    name: TikTok
-    policy: TikTok
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Twitter.yaml
-    policy: Twitter
-    update_interval: 86400
-    name: Twitter/X 规则集
-- domain_suffix:
-    match: x.com
-    name: Twitter/X
-    policy: Twitter
-- domain_suffix:
-    match: twitter.com
-    name: Twitter/X
-    policy: Twitter
-- domain_suffix:
-    match: t.co
-    name: Twitter/X
-    policy: Twitter
-- domain_suffix:
-    match: twimg.com
-    name: Twitter/X
-    policy: Twitter
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Emby.yaml
-    policy: Emby
-    update_interval: 86400
-    name: Emby 规则集
-- domain_suffix:
-    match: mb3admin.com
-    name: Emby
-    policy: Emby
-- domain_suffix:
-    match: emby.media
-    name: Emby
-    policy: Emby
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Spotify.yaml
-    policy: Spotify
-    update_interval: 86400
-    name: Spotify 规则集
-- domain_suffix:
-    match: spotify.com
-    name: Spotify
-    policy: Spotify
-- domain_suffix:
-    match: scdn.co
-    name: Spotify
-    policy: Spotify
-- domain_suffix:
-    match: spotifycdn.com
-    name: Spotify
-    policy: Spotify
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Proxy.yaml
-    policy: 默认代理
-    update_interval: 86400
-    name: 境外代理规则
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/ChinaDomain.yaml
-    policy: DIRECT
-    update_interval: 86400
-    name: 国内域名直连
-- rule_set:
-    match: https://github.com/Repcz/Tool/raw/X/Egern/Rules/Direct.yaml
-    policy: DIRECT
-    update_interval: 86400
-    name: 国内直连规则
-- geoip:
-    match: CN
-    name: 中国 IP 直连
-    no_resolve: true
-    policy: DIRECT
-- default:
-    policy: 漏网之鱼
-mitm:
-  enabled: true
-modules:
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/广告平台拦截器.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/拦截HTTPDNS.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/高德地图去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/闲鱼去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/酷安去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/知乎去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/滴滴出行去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/微博轻享版去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/微信小程序去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/微信公众号去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/小红书去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/什么值得买去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/QingRex/LoonKissSurge/refs/heads/main/Surge/Beta/IT之家去广告.beta.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/fmz200/wool_scripts/refs/heads/main/Surge/module/XWebAds.module
-  enabled: true
-- url: https://raw.githubusercontent.com/Keywos/rule/main/script/wy/wy.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/Maasea/sgmodule/master/YouTube.Enhance.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/ConnersHua/RuleGo/master/Surge/Module/Block/Advertising.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/githubdulong/Script/master/Surge/jd_price2.sgmodule
-  enabled: true
-- url: https://github.com/chavyleung/scripts/raw/master/box/rewrite/boxjs.rewrite.surge.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/kokoryh/Sparkle/refs/heads/master/release/surge/module/bilibili.sgmodule
-  enabled: true
-- url: https://raw.githubusercontent.com/xream/scripts/main/surge/modules/network-info/network-info-lite.sgmodule
-  enabled: false
-- url: https://raw.githubusercontent.com/001ProMax/Surge/main/Module/AD/Spotify.sgmodule
-  enabled: false
-- name: SubStore
-  url: https://raw.githubusercontent.com/sub-store-org/Sub-Store/refs/heads/master/config/Egern.yaml
-  enabled: false
-ipv6: false
+  # 局域网优先直连
+  - domain:
+      match: "localhost"
+      policy: 直连
+  - domain_suffix:
+      match: "localhost"
+      policy: 直连
+  - domain_suffix:
+      match: "local"
+      policy: 直连
+  - domain_suffix:
+      match: "lan"
+      policy: 直连
+  - domain_suffix:
+      match: "home.arpa"
+      policy: 直连
+  - ip_cidr:
+      match: 0.0.0.0/8
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 10.0.0.0/8
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 100.64.0.0/10
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 127.0.0.0/8
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 169.254.0.0/16
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 172.16.0.0/12
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 192.168.0.0/16
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 224.0.0.0/4
+      policy: 直连
+      no_resolve: true
+  - ip_cidr:
+      match: 255.255.255.255/32
+      policy: 直连
+      no_resolve: true
+  - ip_cidr6:
+      match: "::1/128"
+      policy: 直连
+      no_resolve: true
+  - ip_cidr6:
+      match: "fc00::/7"
+      policy: 直连
+      no_resolve: true
+  - ip_cidr6:
+      match: "fe80::/10"
+      policy: 直连
+      no_resolve: true
+  - ip_cidr6:
+      match: "ff00::/8"
+      policy: 直连
+      no_resolve: true
+
+  # 防 WebRTC 泄露：拦截 STUN/TURN 探测域名、端口与 STUN 协议（PlayStation 联机放行）
+  - domain_suffix:
+      match: "stun.playstation.net"
+      policy: 直连
+  - domain_regex:
+      match: '^([a-zA-Z0-9-]+\.)*stun[0-9]*\.'
+      policy: REJECT
+  - dest_port:
+      match: "3478-3479,5349-5350,19302-19309"
+      policy: REJECT
+  - protocol:
+      match: stun
+      policy: REJECT
+
+  # 屏蔽哔哩哔哩 PCDN
+  - domain_suffix:
+      match: "mcdn.bilivideo.com"
+      policy: REJECT
+  - domain_suffix:
+      match: "mcdn.bilivideo.cn"
+      policy: REJECT
+  - domain_suffix:
+      match: "edge.mountaintoys.cn"
+      policy: REJECT
+
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/SteamCN/SteamCN.list"
+      policy: 直连
+      update_interval: 86400
+  - domain:
+      match: "fsend.cn"
+      policy: 直连
+  - domain:
+      match: "international-gfe.download.nvidia.com"
+      policy: 直连
+  - domain_suffix:
+      match: "nvidia.cn"
+      policy: 直连
+  - domain_suffix:
+      match: "nvidia.com.cn"
+      policy: 直连
+  - domain_suffix:
+      match: "epicgames.com"
+      policy: 直连
+  - domain_suffix:
+      match: "epicgames.dev"
+      policy: 直连
+  - domain_suffix:
+      match: "unrealengine.com"
+      policy: 直连
+  - domain_suffix:
+      match: "apple.com.cn"
+      policy: 直连
+  - domain_suffix:
+      match: "icloud.com.cn"
+      policy: 直连
+  - domain_suffix:
+      match: "microsoft.com.cn"
+      policy: 直连
+  - domain_suffix:
+      match: "office.com.cn"
+      policy: 直连
+  - domain_suffix:
+      match: "azure.cn"
+      policy: 直连
+  - domain_suffix:
+      match: "windowsazure.cn"
+      policy: 直连
+  - domain:
+      match: "download.microsoft.com"
+      policy: 直连
+  - domain:
+      match: "ntservicepack.microsoft.com"
+      policy: 直连
+
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/BiliBili/BiliBili.list"
+      policy: 直连
+      update_interval: 86400
+
+  # NodeSeek 论坛及官方图床/测试站分流
+  - domain_suffix:
+      match: "nodeseek.com"
+      policy: NodeSeek
+  - domain_suffix:
+      match: "nodeseek.org"
+      policy: NodeSeek
+  - domain_suffix:
+      match: "seek.li"
+      policy: NodeSeek
+  - domain_suffix:
+      match: "nodeimage.com"
+      policy: NodeSeek
+  - domain_suffix:
+      match: "nodequality.com"
+      policy: NodeSeek
+
+  # 金融与加密货币（Bybit / 币安 / OKX / TradingView / PayPal）
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Crypto/Crypto.list"
+      policy: Crypto
+      update_interval: 86400
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Binance/Binance.list"
+      policy: Crypto
+      update_interval: 86400
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/OKX/OKX.list"
+      policy: Crypto
+      update_interval: 86400
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/PayPal/PayPal.list"
+      policy: Crypto
+      update_interval: 86400
+  - domain_suffix:
+      match: "bybit.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bycsi.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bytick.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "byapis.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bycbe.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bymj.io"
+      policy: Crypto
+  - domain_suffix:
+      match: "byabcde.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "byapps.net"
+      policy: Crypto
+  - domain_suffix:
+      match: "byd3c3.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bybit.biz"
+      policy: Crypto
+  - domain_suffix:
+      match: "bybdc6.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bybit-global.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bybit.cloud"
+      policy: Crypto
+  - domain_suffix:
+      match: "bybitglobal.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "binance.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "binance.me"
+      policy: Crypto
+  - domain_suffix:
+      match: "binance.cloud"
+      policy: Crypto
+  - domain_suffix:
+      match: "binance.im"
+      policy: Crypto
+  - domain_suffix:
+      match: "binancecnt.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "binancefuture.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bnbstatic.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bntrace.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bnappzh.co"
+      policy: Crypto
+  - domain_suffix:
+      match: "bnappzh.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bnbzh.ac"
+      policy: Crypto
+  - domain_suffix:
+      match: "saasexch.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "saasexch.cc"
+      policy: Crypto
+  - domain_suffix:
+      match: "okx.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "okex.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bitget.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "bitgetapp.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "aicoin.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "dexscreener.com"
+      policy: Crypto
+  - domain_suffix:
+      match: "phantom.app"
+      policy: Crypto
+  - domain_suffix:
+      match: "backpack.exchange"
+      policy: Crypto
+  - domain_suffix:
+      match: "tradingview.com"
+      policy: Crypto
+
+  # Meta 放在 AI 之前，确保 meta.ai / Threads / Facebook / WhatsApp 等全部命中 Meta 专组
+  - domain_suffix:
+      match: "meta.ai"
+      policy: Meta
+  - domain_suffix:
+      match: "meta.com"
+      policy: Meta
+  - domain_suffix:
+      match: "threads.com"
+      policy: Meta
+  - domain_suffix:
+      match: "threads.net"
+      policy: Meta
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Facebook/Facebook.list"
+      policy: Meta
+      update_interval: 86400
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Instagram/Instagram.list"
+      policy: Meta
+      update_interval: 86400
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Whatsapp/Whatsapp.list"
+      policy: Meta
+      update_interval: 86400
+  - rule_set:
+      match: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Threads/Threads.list"
+      policy: Meta
+      update_interval: 86400
+
+  # AI 与 Claude 域名分流（核心 / CDN / 认证 / 人机验证 / KYC / 支付 / 遥测 / IP 段全走 AI 组）
+  - rule_set:
+      match: "https://ruleset.skk.moe/List/non_ip/ai.conf"
+      policy: AI
+      update_interval: 86400
+  # 1. Claude 核心域名
+  - domain_suffix:
+      match: "anthropic.com"
+      policy: AI
+  - domain_suffix:
+      match: "claude.ai"
+      policy: AI
+  - domain_suffix:
+      match: "claude.com"
+      policy: AI
+  - domain_suffix:
+      match: "clau.de"
+      policy: AI
+  - domain_suffix:
+      match: "claudemcpclient.com"
+      policy: AI
+  - domain_suffix:
+      match: "claudemcpcontent.com"
+      policy: AI
+  - domain_suffix:
+      match: "claudeusercontent.com"
+      policy: AI
+  # 2. Claude CDN 和静态资源
+  - domain:
+      match: "servd-anthropic-website.b-cdn.net"
+      policy: AI
+  - domain:
+      match: "anthropic.com.cdn.cloudflare.net"
+      policy: AI
+  # 3. Claude 认证、人机验证（hCaptcha / Turnstile / reCAPTCHA / Arkose）与内容服务
+  - domain:
+      match: "anthropic.auth0.com"
+      policy: AI
+  - domain_suffix:
+      match: "auth0.com"
+      policy: AI
+  - domain_suffix:
+      match: "workos.com"
+      policy: AI
+  - domain:
+      match: "anthropic-com.ghost.io"
+      policy: AI
+  - domain:
+      match: "accounts.google.com"
+      policy: AI
+  - domain_suffix:
+      match: "hcaptcha.com"
+      policy: AI
+  - domain_suffix:
+      match: "hcaptcha.net"
+      policy: AI
+  - domain:
+      match: "challenges.cloudflare.com"
+      policy: AI
+  - domain_suffix:
+      match: "recaptcha.net"
+      policy: AI
+  - domain_suffix:
+      match: "arkoselabs.com"
+      policy: AI
+  - domain_suffix:
+      match: "funcaptcha.com"
+      policy: AI
+  # 4. Claude KYC 认证与支付风控指纹（Persona / Stripe）
+  - domain:
+      match: "maps.googleapis.com"
+      policy: AI
+  - domain_suffix:
+      match: "withpersona.com"
+      policy: AI
+  - domain_suffix:
+      match: "frompersona.com"
+      policy: AI
+  - domain_suffix:
+      match: "stripe.com"
+      policy: AI
+  - domain_suffix:
+      match: "stripe.network"
+      policy: AI
+  - domain_suffix:
+      match: "stripecdn.com"
+      policy: AI
+  # 5. Claude 监控和遥测上报（防出口 IP 不一致触发风控）
+  - domain_suffix:
+      match: "sentry.io"
+      policy: AI
+  - domain_suffix:
+      match: "statsigapi.net"
+      policy: AI
+  - domain_suffix:
+      match: "statsig.com"
+      policy: AI
+  - domain_suffix:
+      match: "featuregates.org"
+      policy: AI
+  - domain_suffix:
+      match: "featureassets.org"
+      policy: AI
+  - domain_suffix:
+      match: "prodregistryv2.org"
+      policy: AI
+  - domain:
+      match: "browser-intake-us5-datadoghq.com"
+      policy: AI
+  - domain_keyword:
+      match: "datadog"
+      policy: AI
+  - domain_keyword:
+      match: "sentry"
+      policy: AI
+  - domain_keyword:
+      match: "sift"
+      policy: AI
+  - domain_suffix:
+      match: "segment.io"
+      policy: AI
+  - domain_suffix:
+      match: "segment.com"
+      policy: AI
+  - domain_suffix:
+      match: "launchdarkly.com"
+      policy: AI
+  - domain_suffix:
+      match: "honeycomb.io
