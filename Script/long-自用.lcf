@@ -7,7 +7,7 @@
 [General]
 ip-mode=ipv4-only
 ipv6-vif=off
-# 连接家庭 Wi-Fi（ZTE-5G）自动切换为直连模式，离开后自动恢复规则分流
+# 连接家庭 Wi-Fi（ZTE-5G）自动切换为直连模式，离开后自动恢复规则分流（需在 iOS 定位服务中给 Loon 开启「始终」权限）
 ssid-trigger="ZTE-5G":direct,"cellular":rule,"default":rule
 # 国内加密 DoH：国内 CDN 解析准确（直连 / GEOIP 判断都依赖它），且在大陆可稳定连接。
 # 走代理的域名由节点远端解析，不受此处影响。
@@ -70,7 +70,7 @@ Meta节点=NameRegex, FilterKey="^(?=.*(?i)Meta)(?!.*((?i)❌|✖|⚠|群|返利
 默认代理=select, 自动选择, 手动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 提示节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png
 
 # --- 2. 自动选择（首位放 香港-自动选择 兜底防德国抢跑 + 全部 ⚡ 节点） ---
-自动选择=url-test, 香港-自动选择, 自动测速节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+自动选择=url-test, 香港-自动选择, 自动测速节点, url=http://cp.cloudflare.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 
 # --- 3. 手动选择（全部节点，含 ❌ 提示节点） ---
 手动选择=select, 全球节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Static.png
@@ -83,14 +83,14 @@ Meta节点=NameRegex, FilterKey="^(?=.*(?i)Meta)(?!.*((?i)❌|✖|⚠|群|返利
 新加坡=select, 新加坡-自动选择, 新加坡节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png
 其他节点=select, 其他节点-自动选择, 其他地区节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
 
-# --- 5. 分流策略组（与 Mihomo 顺序、名称、默认项完全一致） ---
-AI=select, 美国, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png
+# --- 5. 分流策略组（与 Mihomo ziyong4 顺序、名称、默认台湾项完全一致） ---
+AI=select, 台湾, 默认代理, 手动选择, 自动选择, 美国, 日本, 新加坡, 香港, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ChatGPT.png
 Crypto=select, 台湾, 日本, 默认代理, 手动选择, 自动选择, 香港, 新加坡, 美国, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cryptocurrency.png
 NodeSeek=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Server.png
 Meta=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, Meta节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Facebook.png
 Media=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png
 FCM=select, 直连, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, img-url=https://fastly.jsdelivr.net/gh/MiToverG422/Qure@master/IconSet/Color/fcm.png
-Google=select, 美国, 默认代理, 手动选择, 自动选择, 香港, 日本, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png
+Google=select, 台湾, 默认代理, 手动选择, 自动选择, 美国, 日本, 新加坡, 香港, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png
 Microsoft=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png
 Apple=select, 直连, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png
 Telegram=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国, 新加坡, 台湾, 其他节点, 直连, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
@@ -103,12 +103,12 @@ Spotify=select, 默认代理, 手动选择, 自动选择, 香港, 日本, 美国
 直连=select, DIRECT, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China_Map.png
 
 # --- 6. 各地区自动选择组（置于末尾，仅含该地区带 ⚡ 的节点） ---
-香港-自动选择=url-test, 香港自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
-美国-自动选择=url-test, 美国自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
-台湾-自动选择=url-test, 台湾自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
-日本-自动选择=url-test, 日本自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
-新加坡-自动选择=url-test, 新加坡自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
-其他节点-自动选择=url-test, 其他自动节点, url=https://www.gstatic.com/generate_204, interval=300, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+香港-自动选择=url-test, 香港自动节点, url=http://cp.cloudflare.com/generate_204, interval=360, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+美国-自动选择=url-test, 美国自动节点, url=http://cp.cloudflare.com/generate_204, interval=360, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+台湾-自动选择=url-test, 台湾自动节点, url=http://cp.cloudflare.com/generate_204, interval=360, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+日本-自动选择=url-test, 日本自动节点, url=http://cp.cloudflare.com/generate_204, interval=360, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+新加坡-自动选择=url-test, 新加坡自动节点, url=http://cp.cloudflare.com/generate_204, interval=360, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
+其他节点-自动选择=url-test, 其他自动节点, url=http://cp.cloudflare.com/generate_204, interval=360, tolerance=50, img-url=https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png
 
 [Rule]
 # 1. 局域网和保留地址直连（IP 直连请求；局域网域名由 LAN_SPLITTER 处理）
@@ -142,7 +142,29 @@ DOMAIN,ntservicepack.microsoft.com,直连
 # 3. 拦截非中国 IP 的 QUIC，强制回落 TCP
 AND,((PROTOCOL,QUIC),(NOT,((GEOIP,CN)))),REJECT
 
-# 4. AI 与 Claude 域名分流规则大全（来源：https://ip.net.coffee/claude/site.html + hCaptcha 验证补全，确保全走 AI 组）
+# 4. NodeSeek
+DOMAIN-SUFFIX,nodeseek.com,NodeSeek
+DOMAIN-SUFFIX,nodeseek.org,NodeSeek
+DOMAIN-SUFFIX,seek.li,NodeSeek
+DOMAIN-SUFFIX,nodeimage.com,NodeSeek
+DOMAIN-SUFFIX,nodequality.com,NodeSeek
+
+# 5. Meta 全系显式域名（放在 AI 之前，确保 meta.ai / Threads / Facebook / WhatsApp 优先命中 Meta 专组）
+DOMAIN-SUFFIX,facebook.com,Meta
+DOMAIN-SUFFIX,fb.com,Meta
+DOMAIN-SUFFIX,fbcdn.net,Meta
+DOMAIN-SUFFIX,fbsbx.com,Meta
+DOMAIN-SUFFIX,messenger.com,Meta
+DOMAIN-SUFFIX,instagram.com,Meta
+DOMAIN-SUFFIX,cdninstagram.com,Meta
+DOMAIN-SUFFIX,whatsapp.com,Meta
+DOMAIN-SUFFIX,whatsapp.net,Meta
+DOMAIN-SUFFIX,threads.net,Meta
+DOMAIN-SUFFIX,threads.com,Meta
+DOMAIN-SUFFIX,meta.com,Meta
+DOMAIN-SUFFIX,meta.ai,Meta
+
+# 6. AI 与 Claude 域名分流规则大全（精准后缀防误伤国内自建 Sentry 及普通域名，放在 Crypto 之前防 Stripe 被截胡）
 DOMAIN-SUFFIX,anthropic.com,AI
 DOMAIN-SUFFIX,claude.ai,AI
 DOMAIN-SUFFIX,claude.com,AI
@@ -170,6 +192,7 @@ DOMAIN-SUFFIX,stripe.com,AI
 DOMAIN-SUFFIX,stripe.network,AI
 DOMAIN-SUFFIX,stripecdn.com,AI
 DOMAIN-SUFFIX,sentry.io,AI
+DOMAIN-SUFFIX,sentry-cdn.com,AI
 DOMAIN-SUFFIX,statsigapi.net,AI
 DOMAIN-SUFFIX,statsig.com,AI
 DOMAIN-SUFFIX,featuregates.org,AI
@@ -177,8 +200,9 @@ DOMAIN-SUFFIX,featureassets.org,AI
 DOMAIN-SUFFIX,prodregistryv2.org,AI
 DOMAIN,browser-intake-us5-datadoghq.com,AI
 DOMAIN-KEYWORD,datadog,AI
-DOMAIN-KEYWORD,sentry,AI
-DOMAIN-KEYWORD,sift,AI
+DOMAIN-SUFFIX,sift.com,AI
+DOMAIN-SUFFIX,siftscience.com,AI
+DOMAIN-SUFFIX,siftcdn.com,AI
 DOMAIN-SUFFIX,segment.io,AI
 DOMAIN-SUFFIX,segment.com,AI
 DOMAIN-SUFFIX,launchdarkly.com,AI
@@ -197,14 +221,7 @@ IP-CIDR,160.79.104.0/21,AI,no-resolve
 IP-CIDR6,2607:6bc0::/32,AI,no-resolve
 IP-ASN,399358,AI,no-resolve
 
-# 5. NodeSeek
-DOMAIN-SUFFIX,nodeseek.com,NodeSeek
-DOMAIN-SUFFIX,nodeseek.org,NodeSeek
-DOMAIN-SUFFIX,seek.li,NodeSeek
-DOMAIN-SUFFIX,nodeimage.com,NodeSeek
-DOMAIN-SUFFIX,nodequality.com,NodeSeek
-
-# 6. 金融与加密货币补充规则（Bybit / 币安 / OKX / Bitget / TradingView / 海外港美股券商与支付）
+# 7. 金融与加密货币补充规则（Bybit / 币安 / OKX / Bitget / TradingView / 海外港美股券商与支付）
 DOMAIN-SUFFIX,bybit.com,Crypto
 DOMAIN-SUFFIX,bycsi.com,Crypto
 DOMAIN-SUFFIX,bytick.com,Crypto
@@ -287,24 +304,9 @@ DOMAIN-SUFFIX,schwab.com,Crypto
 DOMAIN-SUFFIX,firstrade.com,Crypto
 DOMAIN-SUFFIX,wise.com,Crypto
 
-# 7. Emby 辅助规则
+# 8. Emby 辅助规则
 DOMAIN-SUFFIX,mb3admin.com,Emby
 DOMAIN-KEYWORD,emby,Emby
-
-# 8. Meta 全系显式域名补充
-DOMAIN-SUFFIX,facebook.com,Meta
-DOMAIN-SUFFIX,fb.com,Meta
-DOMAIN-SUFFIX,fbcdn.net,Meta
-DOMAIN-SUFFIX,fbsbx.com,Meta
-DOMAIN-SUFFIX,messenger.com,Meta
-DOMAIN-SUFFIX,instagram.com,Meta
-DOMAIN-SUFFIX,cdninstagram.com,Meta
-DOMAIN-SUFFIX,whatsapp.com,Meta
-DOMAIN-SUFFIX,whatsapp.net,Meta
-DOMAIN-SUFFIX,threads.net,Meta
-DOMAIN-SUFFIX,threads.com,Meta
-DOMAIN-SUFFIX,meta.com,Meta
-DOMAIN-SUFFIX,meta.ai,Meta
 
 # 9. Pornhub（blackmatrix7 无此 Loon 规则，原远程链接 404，改为本地规则）
 DOMAIN-SUFFIX,pornhub.com,Media
@@ -325,6 +327,11 @@ https://kelee.one/Tool/Loon/Lsr/LAN_SPLITTER.lsr, policy=直连, tag=LAN, enable
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/AdvertisingLite/AdvertisingLite.list, policy=REJECT, tag=AdBlock Lite, enabled=false
 https://rule.kelee.one/Loon/GitHub.lsr, policy=默认代理, tag=GitHub, enabled=true
 
+# Meta：放在 AI 远程规则之前，防止 AI.lsr 中的 meta.ai / metaaiusercontent.com 抢先截胡
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Facebook/Facebook.list, policy=Meta, tag=Facebook, enabled=true
+https://rule.kelee.one/Loon/Instagram.lsr, policy=Meta, tag=Instagram, enabled=true
+https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Whatsapp/Whatsapp.list, policy=Meta, tag=WhatsApp, enabled=true
+
 # AI
 https://kelee.one/Tool/Loon/Lsr/AI.lsr, policy=AI, tag=AI, enabled=true
 
@@ -341,11 +348,6 @@ https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Disney/Disney.list, policy=Media, tag=Disney, enabled=true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Niconico/Niconico.list, policy=Media, tag=Niconico, enabled=true
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/BBC/BBC.list, policy=Media, tag=BBC, enabled=true
-
-# Meta：Facebook / Instagram / WhatsApp（Threads 远程规则仅 1 条 threads.net，本地已覆盖）
-https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Facebook/Facebook.list, policy=Meta, tag=Facebook, enabled=true
-https://rule.kelee.one/Loon/Instagram.lsr, policy=Meta, tag=Instagram, enabled=true
-https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/Whatsapp/Whatsapp.list, policy=Meta, tag=WhatsApp, enabled=true
 
 # 国内游戏下载直连
 https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Loon/SteamCN/SteamCN.list, policy=直连, tag=Steam CN, enabled=true
